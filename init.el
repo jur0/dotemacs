@@ -46,3 +46,9 @@
 
 ;; Warn when opening files bigger than 100MB.
 (setq large-file-warning-threshold 100000000)
+
+;; Set encoding to UTF-8 everywhere (just in case the OS does not use UTF-8).
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
