@@ -43,3 +43,6 @@
 
 (add-hook 'minibuffer-setup-hook #'my/set-gc-cons-threshold)
 (add-hook 'minibuffer-exit-hook #'my/unset-gc-cons-threshold)
+
+;; Warn when opening files bigger than 100MB.
+(setq large-file-warning-threshold 100000000)
