@@ -29,3 +29,17 @@
 
 (eval-when-compile
   (require 'use-package))
+
+;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
+;;  While the minibuffer is open, garbage collection will never occur, but once
+;;  make a selection, or cancel, garbage collection will kick off immediately
+;;  and then revert back to the default, sensible behavior.
+(defun my/set-gc-cons-threshold ()
+  (setq gc-cons-threshold most-positive-fixnum))
+
+;; 800KB is the default value.
+(defun my/unset-gc-cons-threshold ()
+  (setq gc-cons-threshold 800000))
+
+(add-hook 'minibuffer-setup-hook #'my/set-gc-cons-threshold)
+(add-hook 'minibuffer-exit-hook #'my/unset-gc-cons-threshold)
