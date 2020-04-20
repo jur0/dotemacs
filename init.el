@@ -52,3 +52,12 @@
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
+
+;; The first running process of Emacs is started as server so Emacs clients can
+;; connect to it. Calling emacsclient (with or without --create-frame), will
+;; share the same buffer list and data as the original running process
+;; (server). The server persists for as long as there is an Emacs frame attached
+;; to it.
+(use-package server
+  :hook
+  (after-init . server-start))
