@@ -34,15 +34,16 @@
 ;;  While the minibuffer is open, garbage collection will never occur, but once
 ;;  make a selection, or cancel, garbage collection will kick off immediately
 ;;  and then revert back to the default, sensible behavior.
-(defun my/set-gc-cons-threshold ()
-  (setq gc-cons-threshold most-positive-fixnum))
-
-;; 800KB is the default value.
-(defun my/unset-gc-cons-threshold ()
-  (setq gc-cons-threshold 800000))
-
-(add-hook 'minibuffer-setup-hook #'my/set-gc-cons-threshold)
-(add-hook 'minibuffer-exit-hook #'my/unset-gc-cons-threshold)
+(use-package emacs
+  :config
+  (setq gc-cons-threshold-original gc-cons-threshold)
+  (defun my/minibuffer-setup-hook ()
+    (setq gc-cons-threshold most-positive-fixnum))
+  (defun my/minibuffer-exit-hook ()
+    (setq gc-cons-threshold gc-cons-threshold-original))
+  :hook
+  ((minibuffer-setup . my/minibuffer-setup-hook)
+   (minibuffer-exit . my/minibuffer-exit-hook)))
 
 ;; Warn when opening files bigger than 100MB.
 (setq large-file-warning-threshold 100000000)
