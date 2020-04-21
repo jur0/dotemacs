@@ -48,10 +48,12 @@
    (minibuffer-exit . my/minibuffer-exit-hook)))
 
 ;; Set encoding to UTF-8 everywhere (just in case the OS does not use UTF-8).
-(prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
+(use-package emacs
+  :config
+  (setq prefer-coding-system 'utf-8
+        set-default-coding-systems 'utf-8
+        set-terminal-coding-system 'utf-8
+        set-keyboard-coding-system 'utf-8))
 
 ;; The first running process of Emacs is started as server so Emacs clients can
 ;; connect to it. Calling emacsclient (with or without --create-frame), will
