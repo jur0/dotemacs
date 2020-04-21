@@ -41,12 +41,11 @@
     (setq gc-cons-threshold most-positive-fixnum))
   (defun my/minibuffer-exit-hook ()
     (setq gc-cons-threshold gc-cons-threshold-original))
+  ;; Warn when opening files bigger than 100MB.
+  (setq large-file-warning-threshold 100000000)
   :hook
   ((minibuffer-setup . my/minibuffer-setup-hook)
    (minibuffer-exit . my/minibuffer-exit-hook)))
-
-;; Warn when opening files bigger than 100MB.
-(setq large-file-warning-threshold 100000000)
 
 ;; Set encoding to UTF-8 everywhere (just in case the OS does not use UTF-8).
 (prefer-coding-system 'utf-8)
