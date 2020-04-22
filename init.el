@@ -102,3 +102,26 @@
   (global-unset-key (kbd "s-p"))
   ;; Disable iconify-frame.
   (global-unset-key (kbd "s-m")))
+
+;; Generic feedback settings.
+(use-package emacs
+  :config
+  ;; Allow narrowing to region.
+  (put 'narrow-to-region 'disabled nil)
+  ;; Allow up/downcase region.
+  (put 'upcase-region 'disabled nil)
+  (put 'downcase-region 'disabled nil)
+  ;; With `a' command in dired buffer the dired buffer is killed and the file or
+  ;; directory on the current line is visited.
+  (put 'dired-find-alternate-file 'disabled nil)
+  ;; Disable overwrite-mode.
+  (put 'overwrite-mode 'disabled t)
+  ;; Yes == y, No == n.
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  ;; Show full path of a file in the title bar.
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (abbreviate-file-name (buffer-file-name))
+                   "%b"))))
+  ;; Disable bell
+  (setq ring-bell-function 'ignore))
