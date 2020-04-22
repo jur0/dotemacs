@@ -89,3 +89,16 @@
         ;; Ask to save the desktop file if no such file exists.
         desktop-save 'ask-if-new)
   (desktop-save-mode t))
+
+;; Disable some unused global keybindings.
+(use-package emacs
+  :config
+  ;; Disable suspend-emacs.
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "C-x C-z"))
+  ;; Disable view-hello-file.
+  (global-unset-key (kbd "C-h h"))
+  ;; Disable print buffer using a printer.
+  (global-unset-key (kbd "s-p"))
+  ;; Disable iconify-frame.
+  (global-unset-key (kbd "s-m")))
