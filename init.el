@@ -103,6 +103,23 @@
   ;; Disable iconify-frame.
   (global-unset-key (kbd "s-m")))
 
+;; Make UI minimal.
+(use-package emacs
+  :init
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+  (menu-bar-mode -1)
+  (blink-cursor-mode -1)
+  (toggle-scroll-bar -1)
+  (scroll-bar-mode -1)
+  :config
+  ;; Do not show annoying startup screen.
+  (setq inhibit-startup-message t
+        inhibit-splash-screen t
+        use-file-dialog nil
+        ;; Allow mouse commands to use dialog boxes.
+        use-dialog-box t))
+
 ;; Generic feedback settings.
 (use-package emacs
   :config
