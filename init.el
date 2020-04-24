@@ -170,3 +170,16 @@
 
   (define-key global-map [remap scroll-down-command] 'scroll-half-down)
   (define-key global-map [remap scroll-up-command] 'scroll-half-up))
+
+;; MacOS settings.
+(when (equal system-type 'darwin)
+  (setq mac-option-modifier 'super)
+  (setq mac-command-modifier 'meta)
+  ;; Maximase the emacs application window.
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  (setq initial-frame-alist
+        (append
+         '((ns-transparent-titlebar . t)
+           (ns-appearance . dark)
+           (vertical-scroll-bars . nil)
+           (internal-border-width . 0)))))
