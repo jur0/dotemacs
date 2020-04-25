@@ -21,11 +21,11 @@
 
 ;; Configure `use-package' prior to loading it.
 (eval-and-compile
-  (setq use-package-always-ensure nil
-        use-package-always-defer nil
-        use-package-always-demand nil
-        use-package-expand-minimally nil
-        use-package-enable-imenu-support t))
+  (setq use-package-always-ensure nil)
+  (setq use-package-always-defer nil)
+  (setq use-package-always-demand nil)
+  (setq use-package-expand-minimally nil)
+  (setq use-package-enable-imenu-support t))
 
 (eval-when-compile
   (require 'use-package))
@@ -50,10 +50,10 @@
 ;; Set encoding to UTF-8 everywhere (just in case the OS does not use UTF-8).
 (use-package emacs
   :config
-  (setq prefer-coding-system 'utf-8
-        set-default-coding-systems 'utf-8
-        set-terminal-coding-system 'utf-8
-        set-keyboard-coding-system 'utf-8))
+  (setq prefer-coding-system 'utf-8)
+  (setq set-default-coding-systems 'utf-8)
+  (setq set-terminal-coding-system 'utf-8)
+  (setq set-keyboard-coding-system 'utf-8))
 
 ;; The first running process of Emacs is started as server so Emacs clients can
 ;; connect to it. Calling emacsclient (with or without --create-frame), will
@@ -70,24 +70,24 @@
 ;; each register.
 (use-package desktop
   :config
-  (setq desktop-dirname (file-name-directory user-emacs-directory)
-        desktop-base-file-name "desktop"
-        desktop-base-lock-name "desktop.lock"
-        desktop-auto-save-timeout 60
-        ;; Number of buffers to restore immediately.
-        desktop-restore-eager 10
-        ;; Do not restore frames TODO
-        desktop-restore-frames nil
-        ;; Regexp identifying files to be excluded from saving.
-        desktop-files-not-to-save nil
-        ;; List of global variables to clear.
-        desktop-globals-to-clear nil
-        ;; Load dektop file even if it's locked.
-        desktop-load-locked-desktop t
-        ;; Offer to recreate the buffer of a deleted file.
-        desktop-missing-file-warning t
-        ;; Ask to save the desktop file if no such file exists.
-        desktop-save 'ask-if-new)
+  (setq desktop-dirname (file-name-directory user-emacs-directory))
+  (setq desktop-base-file-name "desktop")
+  (setq desktop-base-lock-name "desktop.lock")
+  (setq desktop-auto-save-timeout 60)
+  ;; Number of buffers to restore immediately.
+  (setq desktop-restore-eager 10)
+  ;; Do not restore frames TODO
+  (setq desktop-restore-frames nil)
+  ;; Regexp identifying files to be excluded from saving.
+  (setq desktop-files-not-to-save nil)
+  ;; List of global variables to clear.
+  (setq desktop-globals-to-clear nil)
+  ;; Load dektop file even if it's locked.
+  (setq desktop-load-locked-desktop t)
+  ;; Offer to recreate the buffer of a deleted file.
+  (setq desktop-missing-file-warning t)
+  ;; Ask to save the desktop file if no such file exists.
+  (setq desktop-save 'ask-if-new)
   (desktop-save-mode t))
 
 ;; Disable some unused global keybindings.
@@ -114,11 +114,11 @@
   (scroll-bar-mode -1)
   :config
   ;; Do not show annoying startup screen.
-  (setq inhibit-startup-message t
-        inhibit-splash-screen t
-        use-file-dialog nil
-        ;; Allow mouse commands to use dialog boxes.
-        use-dialog-box t))
+  (setq inhibit-startup-message t)
+  (setq inhibit-splash-screen t)
+  (setq use-file-dialog nil)
+  ;; Allow mouse commands to use dialog boxes.
+  (setq use-dialog-box t))
 
 ;; Generic feedback settings.
 (use-package emacs
