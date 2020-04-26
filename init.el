@@ -183,3 +183,10 @@
            (ns-appearance . dark)
            (vertical-scroll-bars . nil)
            (internal-border-width . 0)))))
+
+;; Use system environment variables in Emacs. This is useful when Emacs is not
+;; started by typing a shell command (clicking an icon on the screen).
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
