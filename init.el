@@ -190,3 +190,14 @@
   :ensure t
   :config
   (exec-path-from-shell-initialize))
+
+;; Setup TAB behaviour.
+(use-package emacs
+  :config
+  ;; TAB first tries to indent the current line, and if the line was already
+  ;; indented, then try to complete the thing at point.
+  (setq-default tab-always-indent 'complete)
+  ;; Set tab width to 4 spaces.
+  (setq-default tab-width 4)
+  ;; Use spaces instead of tabs for indentation.
+  (setq-default indent-tabs-mode nil))
