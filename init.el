@@ -201,3 +201,9 @@
   (setq-default tab-width 4)
   ;; Use spaces instead of tabs for indentation.
   (setq-default indent-tabs-mode nil))
+
+;; M-w/C-w copies/kills the whole line if region is not active.
+(use-package whole-line-or-region
+  :ensure t
+  :config
+  (whole-line-or-region-global-mode t))
