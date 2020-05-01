@@ -207,3 +207,10 @@
   :ensure t
   :config
   (whole-line-or-region-global-mode t))
+
+;; Expand/contract sexp.
+(use-package expand-region
+  :ensure t
+  :bind
+  (("C-." . er/expand-region)
+   ("C-," . er/contract-region)))
