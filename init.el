@@ -168,8 +168,9 @@
     (interactive)
     (scroll-up (window-half-window-body-height)))
 
-  (define-key global-map [remap scroll-down-command] 'scroll-half-down)
-  (define-key global-map [remap scroll-up-command] 'scroll-half-up))
+  :bind
+  (([remap scroll-down-command] . scroll-half-down)
+   ([remap scroll-up-command] . scroll-half-up)))
 
 ;; MacOS settings.
 (when (equal system-type 'darwin)
