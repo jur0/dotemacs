@@ -206,6 +206,8 @@
 (use-package whole-line-or-region
   :ensure t
   :config
+  (unbind-key "s-v" whole-line-or-region-local-mode-map)
+  (unbind-key "s-x" whole-line-or-region-local-mode-map)
   (whole-line-or-region-global-mode t))
 
 ;; Expand/contract sexp.
