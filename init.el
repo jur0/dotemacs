@@ -63,6 +63,8 @@
 ;; Global
 (require 'init-global)
 
+(require 'init-edit)
+
 ;; Save the state of Emacs from one session to another. Emacs will save the
 ;; desktop when it exits, the next time Emacs starts, it will restore the
 ;; desktop. "Desktop" is the state of the available buffers and the values of
