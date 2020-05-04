@@ -41,6 +41,25 @@
 (add-hook 'emacs-startup-hook #'my/garbage-collect-when-minibuffer-exit)
 (add-hook 'emacs-startup-hook #'my/garbage-collect-when-unfocused)
 
+;; Add elisp directory and its subdirectories to the load path.
+(defun my/add-to-load-path (directory)
+  "Add DIRECTORY and its subdirectories to `load-path'."
+  (let ((base directory))
+    (unless (member base load-path)
+      (add-to-list 'load-path base))
+    (dolist (f (directory-files base))
+      (let ((name (concat base "/" f)))
+        (when (and (file-directory-p name)
+                   (not (equal f ".."))
+                   (not (equal f ".")))
+          (unless (member base load-path)
+            (add-to-list 'load-path name)))))))
+
+(my/add-to-load-path (expand-file-name "elisp" user-emacs-directory))
+
+;; Constants
+(require 'init-const)
+
 (require 'package)
 
 (setq package-archives
