@@ -14,7 +14,9 @@
 (defun my/setup-default-startup-values ()
   (setq gc-cons-threshold gc-cons-threshold-default)
   (setq gc-cons-percentage gc-cons-percentage-default)
-  (setq file-name-handler-alist file-name-handler-alist-default))
+  (setq file-name-handler-alist file-name-handler-alist-default)
+  (makunbound 'gc-cons-percentage-default)
+  (makunbound 'file-name-handler-alist-default))
 
 ;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 (defun my/minibuffer-setup-hook ()
