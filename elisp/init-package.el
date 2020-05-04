@@ -41,4 +41,20 @@
 (use-package diminish
   :ensure t)
 
+(use-package auto-package-update
+  :ensure t
+  :custom
+  ;; Update each 7 days.
+  (auto-package-update-interval 7)
+  ;; Ask before updating.
+  (auto-package-update-prompt-before-update t)
+  (auto-package-update-delete-old-versions t)
+  ;; Show results of auto update.
+  (auto-package-update-hide-results t)
+  :config
+  ;; Allow 'M-x upgrade-packages' command.
+  (defalias 'upgrade-packages #'auto-package-update-now)
+  ;; Check whether to update packages at startup.
+  (auto-package-update-maybe))
+
 (provide 'init-package)
