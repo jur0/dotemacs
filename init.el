@@ -1,3 +1,8 @@
+;;; Code:
+
+(when (version< emacs-version "27.0.90")
+  (error "Emacs 27.0.90 or newer versions are required!"))
+
 (require 'package)
 
 (setq package-archives
