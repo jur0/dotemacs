@@ -3,6 +3,42 @@
 (when (version< emacs-version "27.0.90")
   (error "Emacs 27.0.90 or newer versions are required!"))
 
+(defvar gc-cons-threshold-default
+  (if (display-graphic-p) 16000000 1600000)
+  "The default value for `gc-cons-threshold'.")
+
+(defvar gc-cons-threshold-upper-limit
+  (if (display-graphic-p) 128000000 32000000)
+  "The upper limit value for `gc-cons-threshold' to defer it.")
+
+(defun my/setup-default-startup-values ()
+  (setq gc-cons-threshold gc-cons-threshold-default)
+  (setq gc-cons-percentage gc-cons-percentage-default)
+  (setq file-name-handler-alist file-name-handler-alist-default))
+
+;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
+(defun my/minibuffer-setup-hook ()
+  (setq gc-cons-threshold gc-cons-threshold-upper-limit))
+
+(defun my/minibuffer-exit-hook ()
+  (setq gc-cons-threshold gc-cons-threshold-default))
+
+(defun my/garbage-collect-when-minibuffer-exit ()
+  (add-hook 'minibuffer-setup-hook #'my/minibuffer-setup-hook)
+  (add-hook 'minibuffer-exit-hook #'my/minibuffer-exit-hook))
+
+(defun my/garbage-collect-when-unfocused ()
+  (if (boundp 'after-focus-change-function)
+      (add-function :after after-focus-change-function
+                    (lambda ()
+                      (unless (frame-focus-state)
+                        (garbage-collect))))
+    (add-hook 'after-focus-change-function #'garbage-collect)))
+
+(add-hook 'emacs-startup-hook #'my/setup-default-startup-values)
+(add-hook 'emacs-startup-hook #'my/garbage-collect-when-minibuffer-exit)
+(add-hook 'emacs-startup-hook #'my/garbage-collect-when-unfocused)
+
 (require 'package)
 
 (setq package-archives
@@ -34,23 +70,6 @@
 
 (eval-when-compile
   (require 'use-package))
-
-;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
-;;  While the minibuffer is open, garbage collection will never occur, but once
-;;  make a selection, or cancel, garbage collection will kick off immediately
-;;  and then revert back to the default, sensible behavior.
-(use-package emacs
-  :config
-  (setq gc-cons-threshold-original gc-cons-threshold)
-  (defun my/minibuffer-setup-hook ()
-    (setq gc-cons-threshold most-positive-fixnum))
-  (defun my/minibuffer-exit-hook ()
-    (setq gc-cons-threshold gc-cons-threshold-original))
-  ;; Warn when opening files bigger than 100MB.
-  (setq large-file-warning-threshold 100000000)
-  :hook
-  ((minibuffer-setup . my/minibuffer-setup-hook)
-   (minibuffer-exit . my/minibuffer-exit-hook)))
 
 ;; Set encoding to UTF-8 everywhere (just in case the OS does not use UTF-8).
 (use-package emacs
