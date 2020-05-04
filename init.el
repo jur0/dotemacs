@@ -57,28 +57,11 @@
 
 (my/add-to-load-path (expand-file-name "elisp" user-emacs-directory))
 
-;; Constants
-(require 'init-const)
-
 ;; Packages
 (require 'init-package)
 
-;; Set encoding to UTF-8 everywhere (just in case the OS does not use UTF-8).
-(use-package emacs
-  :config
-  (setq prefer-coding-system 'utf-8)
-  (setq set-default-coding-systems 'utf-8)
-  (setq set-terminal-coding-system 'utf-8)
-  (setq set-keyboard-coding-system 'utf-8))
-
-;; The first running process of Emacs is started as server so Emacs clients can
-;; connect to it. Calling emacsclient (with or without --create-frame), will
-;; share the same buffer list and data as the original running process
-;; (server). The server persists for as long as there is an Emacs frame attached
-;; to it.
-(use-package server
-  :hook
-  (after-init . server-start))
+;; Global
+(require 'init-global)
 
 ;; Save the state of Emacs from one session to another. Emacs will save the
 ;; desktop when it exits, the next time Emacs starts, it will restore the
@@ -105,19 +88,6 @@
   ;; Ask to save the desktop file if no such file exists.
   (setq desktop-save 'ask-if-new)
   (desktop-save-mode t))
-
-;; Disable some unused global keybindings.
-(use-package emacs
-  :config
-  ;; Disable suspend-emacs.
-  (global-unset-key (kbd "C-z"))
-  (global-unset-key (kbd "C-x C-z"))
-  ;; Disable view-hello-file.
-  (global-unset-key (kbd "C-h h"))
-  ;; Disable print buffer using a printer.
-  (global-unset-key (kbd "s-p"))
-  ;; Disable iconify-frame.
-  (global-unset-key (kbd "s-m")))
 
 ;; Make UI minimal.
 (use-package emacs
@@ -188,29 +158,6 @@
   (([remap scroll-down-command] . scroll-half-down)
    ([remap scroll-up-command] . scroll-half-up)))
 
-;; MacOS settings.
-(when (equal system-type 'darwin)
-  (setq mac-option-modifier 'super)
-  (setq mac-command-modifier 'meta)
-  ;; Maximase the emacs application window.
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  (setq initial-frame-alist
-        (append
-         '((ns-transparent-titlebar . t)
-           (ns-appearance . dark)
-           (vertical-scroll-bars . nil)
-           (internal-border-width . 0)))))
-
-;; Use system environment variables in Emacs. This is useful when Emacs is not
-;; started by typing a shell command (clicking an icon on the screen).
-(use-package exec-path-from-shell
-  :ensure t
-  :config
-  (setq exec-path-from-shell-check-startup-files nil)
-  (setq exec-path-from-shell-variables '("PATH" "MANPATH"))
-  (setq exec-path-from-shell-arguments '("-l"))
-  (exec-path-from-shell-initialize))
-
 ;; Setup TAB behaviour.
 (use-package emacs
   :config
@@ -221,21 +168,6 @@
   (setq-default tab-width 4)
   ;; Use spaces instead of tabs for indentation.
   (setq-default indent-tabs-mode nil))
-
-;; M-w/C-w copies/kills the whole line if region is not active.
-(use-package whole-line-or-region
-  :ensure t
-  :config
-  (unbind-key "s-v" whole-line-or-region-local-mode-map)
-  (unbind-key "s-x" whole-line-or-region-local-mode-map)
-  (whole-line-or-region-global-mode t))
-
-;; Expand/contract sexp.
-(use-package expand-region
-  :ensure t
-  :bind
-  (("C-." . er/expand-region)
-   ("C-," . er/contract-region)))
 
 (use-package orderless
   :ensure t
