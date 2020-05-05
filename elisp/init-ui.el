@@ -58,8 +58,8 @@
   (setq line-number-mode t))
 
 ;; Frame title.
-(setq frame-title-format `(user-login-name "@" system-name " - %b"))
-(setq icon-title-format frame-title-format)
+(setq-default frame-title-format '("" user-login-name "@" system-name ": %b"))
+(setq-default icon-title-format frame-title-format)
 
 ;; Keep the `ns-appearance' frame parameter correctly set in GUI frames so that
 ;; it matches the currently-enabled theme, whether it is light or dark.
