@@ -65,6 +65,8 @@
 
 (require 'init-edit)
 
+(require 'init-ui)
+
 ;; Save the state of Emacs from one session to another. Emacs will save the
 ;; desktop when it exits, the next time Emacs starts, it will restore the
 ;; desktop. "Desktop" is the state of the available buffers and the values of
@@ -90,46 +92,6 @@
   ;; Ask to save the desktop file if no such file exists.
   (setq desktop-save 'ask-if-new)
   (desktop-save-mode t))
-
-;; Make UI minimal.
-(use-package emacs
-  :init
-  (tool-bar-mode -1)
-  (tooltip-mode -1)
-  (menu-bar-mode -1)
-  (blink-cursor-mode -1)
-  (toggle-scroll-bar -1)
-  (scroll-bar-mode -1)
-  :config
-  ;; Do not show annoying startup screen.
-  (setq inhibit-startup-message t)
-  (setq inhibit-splash-screen t)
-  (setq use-file-dialog nil)
-  ;; Allow mouse commands to use dialog boxes.
-  (setq use-dialog-box t))
-
-;; Generic feedback settings.
-(use-package emacs
-  :config
-  ;; Allow narrowing to region.
-  (put 'narrow-to-region 'disabled nil)
-  ;; Allow up/downcase region.
-  (put 'upcase-region 'disabled nil)
-  (put 'downcase-region 'disabled nil)
-  ;; With `a' command in dired buffer the dired buffer is killed and the file or
-  ;; directory on the current line is visited.
-  (put 'dired-find-alternate-file 'disabled nil)
-  ;; Disable overwrite-mode.
-  (put 'overwrite-mode 'disabled t)
-  ;; Yes == y, No == n.
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  ;; Show full path of a file in the title bar.
-  (setq frame-title-format
-        '((:eval (if (buffer-file-name)
-                     (abbreviate-file-name (buffer-file-name))
-                   "%b"))))
-  ;; Disable bell
-  (setq ring-bell-function 'ignore))
 
 ;; Scrolling
 (use-package emacs
@@ -159,17 +121,6 @@
   :bind
   (([remap scroll-down-command] . scroll-half-down)
    ([remap scroll-up-command] . scroll-half-up)))
-
-;; Setup TAB behaviour.
-(use-package emacs
-  :config
-  ;; TAB first tries to indent the current line, and if the line was already
-  ;; indented, then try to complete the thing at point.
-  (setq-default tab-always-indent 'complete)
-  ;; Set tab width to 4 spaces.
-  (setq-default tab-width 4)
-  ;; Use spaces instead of tabs for indentation.
-  (setq-default indent-tabs-mode nil))
 
 (use-package orderless
   :ensure t
