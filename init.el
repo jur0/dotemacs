@@ -67,35 +67,11 @@
 
 (require 'init-icomplete)
 
+(require 'init-backup)
+
 (require 'init-ui)
 
 (require 'init-highlight)
-
-;; Save the state of Emacs from one session to another. Emacs will save the
-;; desktop when it exits, the next time Emacs starts, it will restore the
-;; desktop. "Desktop" is the state of the available buffers and the values of
-;; each register.
-(use-package desktop
-  :config
-  (setq desktop-dirname (file-name-directory user-emacs-directory))
-  (setq desktop-base-file-name "desktop")
-  (setq desktop-base-lock-name "desktop.lock")
-  (setq desktop-auto-save-timeout 60)
-  ;; Number of buffers to restore immediately.
-  (setq desktop-restore-eager 10)
-  ;; Do not restore frames TODO
-  (setq desktop-restore-frames nil)
-  ;; Regexp identifying files to be excluded from saving.
-  (setq desktop-files-not-to-save nil)
-  ;; List of global variables to clear.
-  (setq desktop-globals-to-clear nil)
-  ;; Load dektop file even if it's locked.
-  (setq desktop-load-locked-desktop t)
-  ;; Offer to recreate the buffer of a deleted file.
-  (setq desktop-missing-file-warning t)
-  ;; Ask to save the desktop file if no such file exists.
-  (setq desktop-save 'ask-if-new)
-  (desktop-save-mode t))
 
 ;; Scrolling
 (use-package emacs
