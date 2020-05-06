@@ -73,33 +73,4 @@
 
 (require 'init-highlight)
 
-;; Scrolling
-(use-package emacs
-  :config
-  ;; Leave some lines at the top/botton of the page as margin while scrolling.
-  (setq scroll-margin 5)
-  ;; Keep cursor at the same position while scrolling.
-  (setq scroll-preserve-screen-position t)
-  (setq scroll-conservatively 1)
-
-  (defun window-half-window-body-height ()
-    "Return half of the height of WINDOW's test area."
-    (/ (window-body-height) 2))
-
-  ;; Scroll just half page down using C-v.
-  (defun scroll-half-down ()
-    "Scroll down half the page."
-    (interactive)
-    (scroll-down (window-half-window-body-height)))
-
-  ;; Scroll just half page up using M-v.
-  (defun scroll-half-up ()
-    "Scroll up half the page."
-    (interactive)
-    (scroll-up (window-half-window-body-height)))
-
-  :bind
-  (([remap scroll-down-command] . scroll-half-down)
-   ([remap scroll-up-command] . scroll-half-up)))
-
-
+(require 'init-scroll)
