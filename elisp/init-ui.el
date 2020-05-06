@@ -38,7 +38,7 @@
 ;; Disable blinking cursor.
 (blink-cursor-mode -1)
 
-;; Display dividers between windows
+;; Display dividers between windows.
 (setq window-divider-default-places t)
 (setq window-divider-default-bottom-width 1)
 (setq window-divider-default-right-width 1)
@@ -58,7 +58,9 @@
   (setq line-number-mode t))
 
 ;; Frame title.
-(setq-default frame-title-format '("" user-login-name "@" system-name ": %b"))
+(setq frame-title-format
+      `(,(user-login-name) "@" ,(system-name) "   "
+        global-mode-string "  %f"))
 (setq-default icon-title-format frame-title-format)
 
 ;; Keep the `ns-appearance' frame parameter correctly set in GUI frames so that
