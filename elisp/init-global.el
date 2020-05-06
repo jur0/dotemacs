@@ -63,4 +63,7 @@
 ;; Warn when opening files bigger than 32MB.
 (setq large-file-warning-threshold 32000000)
 
+;; Show errors.
+(setq debug-on-error t)
+
 (provide 'init-global)
