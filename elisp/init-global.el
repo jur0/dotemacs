@@ -60,4 +60,7 @@
 ;; Do not compact font caches during garbage collection.
 (setq inhibit-compacting-font-caches t)
 
+;; Warn when opening files bigger than 32MB.
+(setq large-file-warning-threshold 32000000)
+
 (provide 'init-global)
