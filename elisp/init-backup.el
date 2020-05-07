@@ -6,7 +6,8 @@
 ;; each register.
 (use-package desktop
   :config
-  (setq desktop-dirname (file-name-directory user-emacs-directory))
+  (setq desktop-path (list user-emacs-directory))
+  (setq desktop-dirname user-emacs-directory)
   (setq desktop-base-file-name "desktop")
   (setq desktop-base-lock-name "desktop.lock")
   (setq desktop-auto-save-timeout 60)
