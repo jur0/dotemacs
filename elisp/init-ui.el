@@ -38,6 +38,9 @@
 ;; Disable blinking cursor.
 (blink-cursor-mode -1)
 
+;; Echo unfinished commands after a delay (in seconds).
+(setq echo-keystrokes 0.15)
+
 ;; Display dividers between windows.
 (setq window-divider-default-places t)
 (setq window-divider-default-bottom-width 1)
