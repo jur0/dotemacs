@@ -71,6 +71,8 @@
 
 (require 'init-ui)
 
+(require 'init-dired)
+
 (require 'init-highlight)
 
 (require 'init-scroll)
