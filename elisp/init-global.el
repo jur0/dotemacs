@@ -66,4 +66,8 @@
 ;; Show errors.
 (setq debug-on-error t)
 
+;; Store customization info in a separate file.
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file 'noerror)
+
 (provide 'init-global)
