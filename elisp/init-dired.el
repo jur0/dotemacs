@@ -80,6 +80,18 @@
   :hook
   (dired-mode . dired-collapse-mode))
 
+;; Make directories of a dired buffer expandable and form a tree structure.
+(use-package dired-subtree
+  :ensure t
+  :after
+  (dired)
+  :config
+  (setq dired-subtree-use-backgrounds nil)
+  :bind
+  (:map dired-mode-map
+        ("<tab>" . dired-subtree-toggle)
+        ("C-<tab>" . dired-subtree-cycle)))
+
 ;; Extra colours for dired especially in detailed view.
 (use-package diredfl
   :ensure t
