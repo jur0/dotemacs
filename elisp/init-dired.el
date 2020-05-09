@@ -36,6 +36,22 @@
   ;; Ignore case.
   (setq find-name-arg "-iname"))
 
+;; Extra dired functionality (shipped with Emacs).
+(use-package dired-x
+  :after
+  (dired)
+  :config
+  (setq dired-clean-confirm-killing-deleted-buffers t)
+  ;; Do not bind a key to `dired-man'.
+  (setq dired-bind-man nil)
+  ;; Do not bind a key to `dired-info'.
+  (setq dired-bind-info nil)
+  :bind
+  (("C-x C-j" . dired-jump)
+   ("s-j" . dired-jump)
+   ("C-x 4 C-j" . dired-jump-other-window)
+   ("s-J" . dired-jump-other-window)))
+
 ;; Adds ability to call async functions.
 (use-package async
   :ensure t)
