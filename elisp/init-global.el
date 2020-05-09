@@ -39,7 +39,7 @@
     :init
     (setq exec-path-from-shell-check-startup-files nil)
     (setq exec-path-from-shell-variables '("PATH" "MANPATH"))
-    (setq exec-path-from-shell-arguments '("-l"))
+    (setq exec-path-from-shell-arguments '("-l" "-i"))
     (exec-path-from-shell-initialize)))
 
 ;; The first running process of Emacs is started as server so Emacs clients can
