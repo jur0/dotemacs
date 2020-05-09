@@ -5,7 +5,8 @@
   (setq dired-recursive-copies 'always)
   (setq dired-recursive-deletes 'always)
   ;;dired-auto-revert-buffer t
-  (setq dired-listing-switches "-AFhlv --group-directories-first")
+  (setq dired-listing-switches
+        "-AGFhlv --group-directories-first --time-style=long-iso")
   ;; If there in another dired buffer, use its current directory as target.
   (setq dired-dwim-target t)
   :hook
@@ -30,7 +31,8 @@
   :after
   (dired)
   :config
-  (setq find-ls-option '("-ls" . "AFhlv --group-directories-first"))
+  (setq find-ls-option
+        '("-ls" . "-AGFhlv --group-directories-first --time-style=long-iso"))
   ;; Ignore case.
   (setq find-name-arg "-iname"))
 
