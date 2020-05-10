@@ -80,14 +80,16 @@
 ;; (setq auto-save-timeout 20)
 ;; (setq auto-save-interval 200)
 
-;; Super-save auto-saves buffers, when certain events happen - e.g.  switch
+;; Disable auto-save, super-save is used instead.
+(setq auto-save-default nil)
+
+;; Super-save auto-saves buffers, when certain events happen - e.g. switch
 ;; between buffers, an Emacs frame loses focus, etc. It's both something that
 ;; augments and replaces the standard auto-save-mode.
 (use-package super-save
   :ensure t
   :config
   ;; Switch off the default auto-save-mode.
-  (setq auto-save-default nil)
   (setq super-save-auto-save-when-idle t)
   (setq super-save-remote-files nil)
   (super-save-mode t))
