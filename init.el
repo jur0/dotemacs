@@ -73,6 +73,8 @@
 
 (require 'init-dired)
 
+(require 'init-buffer)
+
 (require 'init-highlight)
 
 (require 'init-scroll)
