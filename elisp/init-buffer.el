@@ -45,4 +45,15 @@
    ("s n" . ibuffer-do-sort-by-alphabetic)
    ("/ g" . ibuffer-filter-by-content)))
 
+;; Integrate ibuffer with version control.
+(use-package ibuffer-vc
+  :ensure t
+  :after
+  (ibuffer vc)
+  :bind
+  (:map ibuffer-mode-map
+        ;; Filter groups on per project basis.
+        ("/ V" . ibuffer-vc-set-filter-groups-by-vc-root)
+        ("/ <deletechar>" . ibuffer-clear-filter-groups)))
+
 (provide 'init-buffer)
