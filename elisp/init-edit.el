@@ -36,6 +36,12 @@
   :config
   (delete-selection-mode t))
 
+;; Move back to the last change.
+(use-package goto-last-change
+  :ensure t
+  :bind
+  ("C-z" . goto-last-change))
+
 ;; M-w/C-w copies/kills the whole line if region is not active.
 (use-package whole-line-or-region
   :ensure t
