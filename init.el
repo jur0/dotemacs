@@ -63,6 +63,8 @@
 ;; Global
 (require 'init-global)
 
+(require 'init-window)
+
 (require 'init-edit)
 
 (require 'init-icomplete)
