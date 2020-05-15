@@ -60,7 +60,8 @@
 ;; Packages
 (require 'init-package)
 
-;; Global
+(require 'init-font)
+
 (require 'init-global)
 
 (require 'init-window)
