@@ -56,4 +56,15 @@
         ("/ V" . ibuffer-vc-set-filter-groups-by-vc-root)
         ("/ <deletechar>" . ibuffer-clear-filter-groups)))
 
+;; Make some buffers immortal.
+(defun my/make-immortal-buffers ()
+  (if (or (eq (current-buffer) (get-buffer "*scratch*"))
+          (eq (current-buffer) (get-buffer "*Messages*")))
+      ;; Put buffer at the end of the list of all buffers.
+      (progn (bury-buffer)
+             nil)
+    t))
+
+(add-hook 'kill-buffer-query-functions 'my/make-immortal-buffers)
+
 (provide 'init-buffer)
