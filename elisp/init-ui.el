@@ -74,4 +74,30 @@
     :config
     (ns-auto-titlebar-mode t)))
 
+(use-package doom-themes
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t)
+  (setq doom-themes-enable-italic t)
+  (doom-themes-org-config)
+  (load-theme 'doom-molokai t))
+
+(use-package doom-modeline
+  :ensure t
+  :config
+  (setq doom-modeline-height 1)
+  (setq doom-modeline-bar-width 6)
+  (setq doom-modeline-major-mode-icon t)
+  (setq doom-modeline-icon t)
+  (setq doom-modeline-buffer-modification-icon t)
+  (setq doom-modeline-major-mode-color-icon t)
+  (setq doom-modeline-buffer-state-icon t)
+  (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
+  (setq doom-modeline-minor-modes nil)
+  (setq doom-modeline-indent-info nil)
+  (setq doom-modeline-buffer-encoding nil)
+  (setq doom-modeline-env-version nil)
+  :hook
+  (after-init . doom-modeline-mode))
+
 (provide 'init-ui)
