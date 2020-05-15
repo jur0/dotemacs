@@ -23,6 +23,9 @@
 ;; Delete files by moving them into OS's trash directory.
 (setq delete-by-moving-to-trash t)
 
+;; Delete trailing whitespace before saving buffer.
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
+
 ;; Automatically revert buffers when files on disk change.
 (use-package autorevert
   :config
