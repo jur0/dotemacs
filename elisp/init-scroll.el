@@ -1,22 +1,35 @@
 ;;; Code:
 
-(defun my/window-half-window-body-height ()
-  "Return half of the height of WINDOW's test area."
-  (/ (window-body-height) 2))
+(defun my/window-half-height (&optional window)
+  (max 1 (/ (1- (window-height window)) 2)))
 
 (defun my/scroll-half-down ()
   "Scroll down half the page."
   (interactive)
-  (scroll-down (my/window-half-window-body-height)))
+  (scroll-down (my/window-half-height)))
 
 (defun my/scroll-half-up ()
   "Scroll up half the page."
   (interactive)
-  (scroll-up (my/window-half-window-body-height)))
+  (scroll-up (my/window-half-height)))
+
+(defun my/scroll-other-window-half-down ()
+  "Scroll other window half page down."
+  (interactive)
+  (scroll-other-window-down
+   (my/window-half-height (other-window-for-scrolling))))
+
+(defun my/scroll-other-window-half-up ()
+  "Scroll other window half page up."
+  (interactive)
+  (scroll-other-window
+   (my/window-half-height (other-window-for-scrolling))))
 
 ;; Scroll half page down/up instead of a full page to keep context more easily.
 (define-key global-map [remap scroll-down-command] 'my/scroll-half-down)
 (define-key global-map [remap scroll-up-command] 'my/scroll-half-up)
+(define-key global-map [remap scroll-other-window-down] 'my/scroll-other-window-half-down)
+(define-key global-map [remap scroll-other-window] 'my/scroll-other-window-half-up)
 
 ;; Keep cursor at the same position while scrolling.
 (setq scroll-preserve-screen-position t)
