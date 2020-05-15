@@ -2,6 +2,15 @@
 
 (use-package window
   :init
+  (setq display-buffer-alist
+        ;; TODO: setup other buffers.
+        '(("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\|Messages\\)\\*"
+           (display-buffer-in-side-window)
+           (window-height . 0.25)
+           (side . bottom)
+           (slot . 0)
+           ;; Make the window no-selectable by `other-window' (C-x o).
+           (window-parameters . ((no-other-window . t))))))
   ;; Resize window combinations proportionally.
   (setq window-combination-resize t)
   (setq even-window-sizes 'height-only)
