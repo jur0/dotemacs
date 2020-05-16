@@ -68,11 +68,11 @@
 
 ;; Keep the `ns-appearance' frame parameter correctly set in GUI frames so that
 ;; it matches the currently-enabled theme, whether it is light or dark.
-(when (or sys/mac-x-p sys/mac-cocoa-p)
-  (use-package ns-auto-titlebar
-    :ensure t
-    :config
-    (ns-auto-titlebar-mode t)))
+(use-package ns-auto-titlebar
+  :if (eq 'ns (window-system))
+  :ensure t
+  :config
+  (ns-auto-titlebar-mode t))
 
 (use-package doom-themes
   :ensure t
