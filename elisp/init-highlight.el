@@ -21,4 +21,14 @@
   :hook
   (prog-mode . rainbow-delimiters-mode))
 
+;; Highlight entire code blocks. The mode is activated manually.
+(use-package rainbow-blocks
+  :ensure t
+  :commands
+  (rainbow-blocks-mode)
+  :config
+  (setq rainbow-blocks-highlight-braces-p t)
+  (setq rainbow-blocks-highlight-brackets-p t)
+  (setq rainbow-blocks-highlight-parens-p t))
+
 (provide 'init-highlight)
