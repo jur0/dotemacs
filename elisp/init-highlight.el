@@ -31,4 +31,13 @@
   (setq rainbow-blocks-highlight-brackets-p t)
   (setq rainbow-blocks-highlight-parens-p t))
 
+;; Highlight matching parenthesis or delimiters.
+;; To jump back and forth to matching paren: C-M-f C-M-b
+(use-package paren
+  :config
+  (setq show-paren-style 'parenthesis)
+  (setq show-paren-when-point-in-periphery t)
+  (setq show-paren-when-point-inside-paren t)
+  (show-paren-mode t))
+
 (provide 'init-highlight)
