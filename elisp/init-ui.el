@@ -100,4 +100,15 @@
   :hook
   (after-init . doom-modeline-mode))
 
+(defun my/font-installed-p (font-name)
+  "Check if font with FONT-NAME is available."
+  (find-font (font-spec :name font-name)))
+
+(use-package all-the-icons
+  :if sys/guip
+  :ensure t
+  :init
+  (unless (or sys/win32p (my/font-installed-p "all-the-icons"))
+    (all-the-icons-install-fonts t)))
+
 (provide 'init-ui)
