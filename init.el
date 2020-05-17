@@ -74,6 +74,8 @@
 
 (require 'init-ui)
 
+(require 'init-linter)
+
 (require 'init-dired)
 
 (require 'init-buffer)
