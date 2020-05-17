@@ -15,4 +15,10 @@
   (setq rainbow-ansi-colors nil)
   (setq rainbow-x-colors nil))
 
+;; Hightlight nested parentheses and braces according to their depth.
+(use-package rainbow-delimiters
+  :ensure t
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
+
 (provide 'init-highlight)
