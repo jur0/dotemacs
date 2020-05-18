@@ -68,6 +68,8 @@
 
 (require 'init-edit)
 
+(require 'init-search)
+
 (require 'init-icomplete)
 
 (require 'init-backup)
