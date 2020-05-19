@@ -70,7 +70,7 @@
 
 (require 'init-search)
 
-(require 'init-icomplete)
+(require 'init-completion)
 
 (require 'init-backup)
 

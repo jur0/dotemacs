@@ -291,4 +291,4 @@ normally would when calling `yank' followed by `yank-pop'."
   ;; Case sensitive search if uppercase character is used.
   (setq dabbrev-upcase-means-case-search t))
 
-(provide 'init-icomplete)
+(provide 'init-completion)
