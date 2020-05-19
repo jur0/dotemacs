@@ -267,4 +267,28 @@ normally would when calling `yank' followed by `yank-pop'."
    :map icomplete-minibuffer-map
    ("C-v" . icomplete-vertical-toggle)))
 
+;; In buffer completion framework built into Emacs. It reads all the text before
+;; the point and tris to find a suitable match (it can be set to search the
+;; whole buffer or other buffers, too). It helps to type what has been written
+;; before.
+(use-package dabbrev
+  :after
+  (minibuffer icomplete icomplete-vertical)
+  :config
+  ;; Regexp for skipping characters of an abbreviation. For example, if a
+  ;; programming language variables start with '$', it's good to set it to
+  ;; "\\$".
+  (setq dabbrev-abbrev-skip-leading-regexp "\\$\\|\\*\\|/\\|=")
+  ;; Do not search for abbreviations only backward.
+  (setq dabbrev-backward-only nil)
+  ;; If expansions differ in case, treat them as different.
+  (setq dabbrev-case-distinction nil)
+  ;; Typed word and expansion don't have to match in case.
+  (setq dabbrev-case-fold-search t)
+  ;; The expansion's case is applied.
+  (setq dabbrev-case-replace nil)
+  (setq dabbrev-check-other-buffers t)
+  ;; Case sensitive search if uppercase character is used.
+  (setq dabbrev-upcase-means-case-search t))
+
 (provide 'init-icomplete)
