@@ -66,6 +66,10 @@
 ;; Show errors.
 (setq debug-on-error t)
 
+;; Store the content of the system clipboard into the kill ring so it can be
+;; retrieved (e.g. with M-y).
+(setq save-interprogram-paste-before-kill t)
+
 ;; Store customization info in a separate file.
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file 'noerror)
