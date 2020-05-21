@@ -45,6 +45,14 @@
   :bind
   ("C-z" . goto-last-change))
 
+;; Change the behaviour of M-< and M-> to move to the first/last actionable
+;; point in a buffer (DWIM style).
+(use-package beginend
+  :ensure t
+  :demand t
+  :config
+  (beginend-global-mode t))
+
 ;; M-w/C-w copies/kills the whole line if region is not active.
 (use-package whole-line-or-region
   :ensure t
