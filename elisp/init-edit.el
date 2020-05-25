@@ -13,8 +13,9 @@
 ;; Permanently indent with spaces, never with TABs.
 (setq-default indent-tabs-mode nil)
 
-;; Tab first tries to indent the current line, and if the line was
-;; already indented, then try to complete the thing at point.
+;; Tab first tries to indent the current line, and if the line was already
+;; indented, then try to complete the thing at point (check `init-completion'
+;; and company's binding of `indent-for-tab-command').
 (setq-default tab-always-indent 'complete)
 
 ;; Add a newline automatically at the end of the file upon save.
