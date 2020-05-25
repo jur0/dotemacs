@@ -141,8 +141,8 @@ key in `completion-list-mode-map'."
   ;; Candidate separator.
   (setq icomplete-separator (propertize " ┆ " 'face 'shadow))
   (setq icomplete-with-completion-tables t)
-  ;; Use Icomplete in non-mini buffers.
-  (setq icomplete-in-buffer t)
+  ;; Do not use Icomplete in non-mini buffers (use company in these buffers).
+  (setq icomplete-in-buffer nil)
   (setq icomplete-tidy-shadowed-file-names nil)
   ;; Disable icomplete-mode act like ido.
   (fido-mode -1)
@@ -267,13 +267,43 @@ normally would when calling `yank' followed by `yank-pop'."
    :map icomplete-minibuffer-map
    ("C-v" . icomplete-vertical-toggle)))
 
-;; In buffer completion framework built into Emacs. It reads all the text before
-;; the point and tris to find a suitable match (it can be set to search the
-;; whole buffer or other buffers, too). It helps to type what has been written
-;; before.
+;; Text completion framework that uses pluggable backends and frontends to
+;; retrieve and display completion candidates.
+(use-package company
+  :ensure t
+  :config
+  (setq company-idle-delay 0.3)
+  (setq company-minimum-prefix-length 3)
+  (setq company-require-match nil)
+  (setq company-selection-wrap-around t)
+  (setq company-show-numbers t)
+  ;; Functions to change the list of candidates received from backends.
+  (setq company-transformers
+        '(company-sort-by-backend-importance
+          ;; Candidates with exact prefix match (same case) have priority.
+          company-sort-prefer-same-case-prefix
+          company-sort-by-occurrence))
+  (setq company-tooltip-align-annotations t)
+  (setq company-tooltip-limit 10)
+  (setq company-tooltip-margin 1)
+  (setq company-tooltip-offset-display 'scrollbar)
+  (global-company-mode t)
+  :bind
+  ;; Do not show *Completions* buffer when completion is invoked using tab.
+  (([remap indent-for-tab-command] . company-indent-or-complete-common)
+   (:map company-active-map
+         ("C-p" . company-select-previous)
+         ("C-n" . company-select-next)
+         ("C-b" . company-other-backend)
+         ("<tab>" . company-complete-common-or-cycle))))
+
+;; In buffer completion framework built into Emacs (and company backend
+;; configured via `company-dabbrev'). It reads all the text before the point and
+;; tris to find a suitable match (it can be set to search the whole buffer or
+;; other buffers, too). It helps to type what has been written before.
 (use-package dabbrev
   :after
-  (minibuffer icomplete icomplete-vertical)
+  (company)
   :config
   ;; Regexp for skipping characters of an abbreviation. For example, if a
   ;; programming language variables start with '$', it's good to set it to
@@ -290,5 +320,29 @@ normally would when calling `yank' followed by `yank-pop'."
   (setq dabbrev-check-other-buffers t)
   ;; Case sensitive search if uppercase character is used.
   (setq dabbrev-upcase-means-case-search t))
+
+;; dabbrev-like company-mode completion backend.
+(use-package company-dabbrev
+  :after
+  (company dabbrev)
+  :config
+  ;; Search also buffers with the same major mode.
+  (setq company-dabbrev-other-buffers t)
+  ;; Do not downcase the returned candidates.
+  (setq company-dabbrev-downcase nil)
+  ;; Ignore case when collecting completion candidates.
+  (setq company-dabbrev-ignore-case t))
+
+;; dabbrev-like company-mode backend for code.
+(use-package company-dabbrev-code
+  :after
+  (company dabbrev)
+  :config
+  ;; Offer completions in comments and strings.
+  (setq company-dabbrev-code-everywhere t)
+  ;; Complete in all modes.
+  (setq company-dabbrev-code-modes t)
+  ;; Search buffers woth the same major mode.
+  (setq company-dabbrev-code-other-buffers t))
 
 (provide 'init-completion)
