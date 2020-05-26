@@ -72,6 +72,8 @@
 
 (require 'init-completion)
 
+(require 'init-help)
+
 (require 'init-backup)
 
 (require 'init-ui)
