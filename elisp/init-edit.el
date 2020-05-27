@@ -24,8 +24,27 @@
 ;; Delete files by moving them into OS's trash directory.
 (setq delete-by-moving-to-trash t)
 
+;; https://stackoverflow.com/questions/3533703/emacs-delete-trailing-whitespace-except-current-line
+;; Delete trailing whitespace expect the current line.  It's annoying when the
+;; last char on the line is a whitespace and when switching to a browser
+;; triggers save which also removes this whitespace (using `super-save').
+(defun my/delete-trailing-whitespace-except-current-line ()
+  "Delete trailing whitespace in the buffer expect the current line."
+  (interactive)
+  (let ((begin (line-beginning-position))
+        (end (line-end-position)))
+    (save-excursion
+      (when (< (point-min) begin)
+        (save-restriction
+          (narrow-to-region (point-min) (1- begin))
+          (delete-trailing-whitespace)))
+      (when (> (point-max) end)
+        (save-restriction
+          (narrow-to-region (1+ end) (point-max))
+          (delete-trailing-whitespace))))))
+
 ;; Delete trailing whitespace before saving buffer.
-(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(add-hook 'before-save-hook #'my/delete-trailing-whitespace-except-current-line)
 
 ;; Automatically revert buffers when files on disk change.
 (use-package autorevert

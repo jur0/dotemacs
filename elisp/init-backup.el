@@ -92,6 +92,8 @@
   :config
   ;; Switch off the default auto-save-mode.
   (setq super-save-auto-save-when-idle t)
+  (setq super-save-idle-duration 15)
+  (setq super-save-hook-triggers nil)
   (setq super-save-remote-files nil)
   (super-save-mode t))
 
