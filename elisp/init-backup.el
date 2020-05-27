@@ -142,7 +142,7 @@ The user's $HOME directory is abbreviated as a tilde."
   (setq undo-tree-history-directory-alist
         `((".*" . ,(expand-file-name "undo-tree" user-emacs-directory))))
   (setq undo-tree-visualizer-timestamps t)
-  (setq do-tree-visualizer-diff t)
+  (setq undo-tree-visualizer-diff t)
   (setq undo-tree-auto-save-history t)
   :config
   (global-undo-tree-mode t))
