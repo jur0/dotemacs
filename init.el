@@ -72,6 +72,8 @@
 
 (require 'init-completion)
 
+(require 'init-workspace)
+
 (require 'init-help)
 
 (require 'init-backup)

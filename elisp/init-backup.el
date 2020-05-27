@@ -13,8 +13,9 @@
   (setq desktop-auto-save-timeout 60)
   ;; Number of buffers to restore immediately.
   (setq desktop-restore-eager 10)
-  ;; Do not restore frames. TODO
-  (setq desktop-restore-frames nil)
+  ;; Restore frames and windows/workspaces (with their positions etc.) - works
+  ;; well with `eyebrowse' (init-workspace.el).
+  (setq desktop-restore-frames t)
   ;; Regexp identifying files to be excluded from saving.
   (setq desktop-files-not-to-save nil)
   ;; List of global variables to clear.
