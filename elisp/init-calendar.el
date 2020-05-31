@@ -3,10 +3,10 @@
 (use-package calendar
   :custom
   ;; Display time in 24h format.
-  (setq calendar-time-display-form
-        '(24-hours ":" minutes
-                   (when time-zone
-                     (concat " (" time-zone ")"))))
+  (calendar-time-display-form
+   '(24-hours ":" minutes
+              (when time-zone
+                (concat " (" time-zone ")"))))
   :config
   ;; Start with Monday.
   (setq calendar-week-start-day 1)
