@@ -1,34 +1,84 @@
 ;;; Code:
 
+;; This is a completion style, it's a back-end for completion and is used by a
+;; front-end that provides a completion UI.
+;; TODO: check intergration with company:
+;; https://github.com/oantolin/orderless#company
 (use-package orderless
   :ensure t
   :init
   (icomplete-mode)
+  :config
+  (setq orderless-component-separator "[/\s_-]+")
+  (setq orderless-matching-styles
+        '(;; The characters of the component should appear in that order in the
+          ;; candidate, but not necessarily consecutively. This maps 'abc' to
+          ;; 'a.*b.*c'.
+          orderless-flex
+          ;; orderless-initialism = each character of the component should
+          ;; appear as the beginning of a word in the candidate, in order. This
+          ;; maps 'abc' to '\<a.*\<b.*\c'.
+          ;; orderless-strict-initialism = like initialism but only allow
+          ;; non-letters in between the matched words. 'fb' would match
+          ;; 'foo-bar' but not 'foo-qux-bar'.
+          ;; orderless-strict-leading-initialism = like strict-initialism but
+          ;; require the first initial to match the candidate’s first word. 'bb'
+          ;; would match 'bar-baz' but not 'foo-bar-baz'.
+          ;; orderless-strict-full-initialism = like strict-initialism but
+          ;; require the first initial to match the candidate’s first word. 'bb'
+          ;; would match 'bar-baz' but not 'foo-bar-baz'.
+          orderless-strict-leading-initialism
+          ;; The component is treated as a regexp that must match somewhere in
+          ;; the candidate.
+          orderless-regexp
+          ;; The component is split at word endings and each piece must match at
+          ;; a word boundary in the candidate, occurring in that order.
+          orderless-prefixes
+          ;; The component is treated as a literal string that must occur in the
+          ;; candidate.
+          orderless-literal))
+
+  ;; '=' at the end of a component will make this component match as a literal.
+  (defun my/orderless-literal-dispatcher (pattern _index _total)
+    (when (string-suffix-p "=" pattern)
+      `(orderless-literal . ,(substring pattern 0 -1))))
+
+  ;; ',' at the end of a component will make this component match as a strict
+  ;; leading initialism.
+  (defun my/orderless-initialism-dispatcher (pattern _index _total)
+    (when (string-suffix-p "," pattern)
+      `(orderless-strict-leading-initialism . ,(substring pattern 0 -1))))
+
+  (setq orderless-style-dispatchers
+        '(my/orderless-literal-dispatcher
+          my/orderless-initialism-dispatcher))
   :bind
   (:map minibuffer-local-completion-map
-        ("SPC" . nil))
-  :config
-  (setq orderless-component-matching-styles
-        '(orderless-regexp orderless-flex))
-  (setq orderless-component-separator "[-_/\s]+"))
+        ;; Space should never complete.
+        ("SPC" . nil)))
 
 (use-package minibuffer
   :config
-  (setq completion-styles
-        '(basic partial-completion initials orderless))
+  ;; completion-styles try to match candidates using one style at a time moving
+  ;; from the first to the last until something is matched. orderless replaces
+  ;; all the built in completion styles apart from partial-completion.
+  ;; partial-completion = allows to navigate to a filesystem path like ~/.l/s/fo
+  ;; for ~/.local/share/fonts.
+  (setq completion-styles '(orderless partial-completion))
   (setq completion-category-defaults nil)
   ;; Cycling is used if there aren't more candidates than this number.
   (setq completion-cycle-threshold 3)
   (setq completion-flex-nospace nil)
   (setq completion-pcm-complete-word-inserts-delimiters t)
-  (setq completion-pcm-word-delimiters "-_/ ")
+  ;; Characters treated as word delimiters for completion.
+  (setq completion-pcm-word-delimiters "-_./:| ")
   (setq completion-show-help nil)
   (setq completion-ignore-case t)
   ;; Ignore case when reading a buffer name.
   (setq read-buffer-completion-ignore-case t)
   ;; Ignore case when reading a file name.
   (setq read-file-name-completion-ignore-case t)
-  ;; *Completions* buffer.
+  ;; Layout of *Completions* buffer.
   (setq completions-format 'vertical)
   ;; Start something in the minibuffer, switch to another window, call
   ;; minibuffer again, run commands and then move back to the original
@@ -125,6 +175,7 @@ key in `completion-list-mode-map'."
         ("w" . my/completions-kill-save-symbol)
         ("M-v" . my/focus-minibuffer))))
 
+;; Front-end for completions.
 (use-package icomplete
   :demand t
   :after
@@ -185,7 +236,7 @@ Hook it to `icomplete-minibuffer-setup-hook'."
       (setq truncate-lines t)))
 
   :hook
-  (icomplete-minibuffer-setup-hook . my/icomplete-minibuffer-truncate)
+  (icomplete-minibuffer-setup . my/icomplete-minibuffer-truncate)
   :bind
   (:map icomplete-minibuffer-map
         ("<tab>" . icomplete-force-complete)
