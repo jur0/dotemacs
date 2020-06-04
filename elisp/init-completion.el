@@ -363,6 +363,15 @@ Add this to `imenu-after-jump-hook'."
   :bind
   ("C-c i" . my/imenu-vertical))
 
+;; By default, Imenu produces a multi-level index, so to select an item it can
+;; be necessary to select parent and the child path. This package makes the list
+;; of items flat, so searching is faster (no need to expand parent and look for
+;; child path).
+(use-package flimenu
+  :ensure t
+  :config
+  (flimenu-global-mode t))
+
 ;; Automatically updated buffer called *Ilist* that is populated with the
 ;; current buffer's imenu entries (typically shown as a sidebar).
 (use-package imenu-list
