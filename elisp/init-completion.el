@@ -318,6 +318,77 @@ normally would when calling `yank' followed by `yank-pop'."
    :map icomplete-minibuffer-map
    ("C-v" . icomplete-vertical-toggle)))
 
+;; Imenu produces list of locations typically in the current buffer.
+(use-package imenu
+  :config
+  ;; Use markers instead of integers (after editing buffer, the integers may get
+  ;; wrong, so they would need refresh).
+  (setq imenu-use-markers t)
+  ;; Always rescan the buffer.
+  (setq imenu-auto-rescan t)
+  (setq imenu-auto-rescan-maxout 600000)
+  (setq imenu-max-item-length 100)
+  ;; Always use minibuffer prompt.
+  (setq imenu-use-popup-menu nil)
+  (setq imenu-eager-completion-buffer t)
+  (setq imenu-space-replacement " ")
+  (setq imenu-level-separator "/")
+
+  (defun my/imenu-vertical ()
+    "Use a vertical Icomplete layout for `imenu'.
+Also configure the value of `orderless-matching-styles' to avoid
+aggressive fuzzy-style matching for this particular command."
+    (interactive)
+    (let ((orderless-matching-styles
+           '(orderless-literal
+             orderless-regexp
+             orderless-prefixes)))
+      (icomplete-vertical-do (:height (/ (frame-height) 4))
+        (call-interactively 'imenu))))
+
+  (defun my/imenu-recenter-pulse ()
+    "Recent `imenu' position at the top with subtle feedback.
+Add this to `imenu-after-jump-hook'."
+    (let ((pulse-delay .05))
+      (recenter 0)
+      (pulse-momentary-highlight-one-line (point))))
+
+  :hook
+  ((imenu-after-jump . my/imenu-recenter-pulse)
+   (imenu-after-jump . (lambda ()
+                         (when (and (eq major-mode 'org-mode)
+                                    (org-at-heading-p))
+                           (org-show-entry)
+                           (org-reveal t)))))
+  :bind
+  ("C-c i" . my/imenu-vertical))
+
+;; Automatically updated buffer called *Ilist* that is populated with the
+;; current buffer's imenu entries (typically shown as a sidebar).
+(use-package imenu-list
+  :ensure t
+  :defer t
+  :config
+  (defun my/imenu-list-dwim (&optional arg)
+    "Convenience wrapper for `imenu-list'.
+Move between the current buffer and a dedicated window with the
+contents of `imenu'.
+
+The dedicated window is created if it does not exist, while it is
+updated once it is focused again through this command.
+
+With \\[universal-argument] toggle the display of the window."
+    (interactive "P")
+    (if arg
+        (imenu-list-smart-toggle)
+      (with-current-buffer
+          (if (eq major-mode 'imenu-list-major-mode)
+              (pop-to-buffer (other-buffer (current-buffer) t))
+            (imenu-list)))))
+
+  :bind
+  ("C-c l" . my/imenu-list-dwim))
+
 ;; Text completion framework that uses pluggable backends and frontends to
 ;; retrieve and display completion candidates.
 (use-package company
