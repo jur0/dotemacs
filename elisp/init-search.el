@@ -82,5 +82,63 @@ afterwards exit the search altogether."
   (setq vr/default-replace-preview nil)
   (setq vr/match-separator-use-custom-face t))
 
+;; Ripgrep is used instead of grep as it is faster especially for large files
+;; with source code.
+(use-package rg
+  :if (executable-find "rg")
+  :ensure t
+  :after
+  (wgrep)
+  :config
+  ;; Group matches in the same file together.
+  (setq rg-group-result t)
+  ;; Hide most of rg command line.
+  (setq rg-hide-command t)
+  (setq rg-show-columns nil)
+  (setq rg-show-header t)
+  (setq rg-custom-type-aliases nil)
+  (setq rg-default-alias-fallback "all")
+
+  (rg-define-search my/rg-vc-or-dir
+    "RipGrep in project root or present directory."
+    :query ask
+    :format regexp
+    :files "everything"
+    ;; Search root project dir or the current directory.
+    :dir (let ((vc (vc-root-dir)))
+           (if vc
+               vc
+             default-directory))
+    :confirm prefix
+    :flags ("--hidden -g !.git"))
+
+  (rg-define-search my/rg-ref-in-dir
+    "RipGrep for thing at point in present directory."
+    :query point
+    :format regexp
+    :files "everything"
+    :dir default-directory
+    :confirm prefix
+    :flags ("--hidden -g !.git"))
+
+  (defun my/rg-save-search-as-name ()
+    "Save `rg' buffer, naming it after the current search query.
+
+This function is meant to be mapped to a key in `rg-mode-map'."
+    (interactive)
+    (let ((pattern (car rg-pattern-history)))
+      (rg-save-search-as-name (concat "«" pattern "»"))))
+
+  :bind
+  (("M-s g" . my/rg-vc-or-dir)
+   ("M-s r" . my/rg-ref-in-dir)
+   (:map rg-mode-map
+         ("s" . my/rg-save-search-as-name)
+         ("C-n" . next-line)
+         ("C-p" . previous-line)
+         ("M-n" . rg-next-file)
+         ("M-p" . rg-prev-file))))
+
 (provide 'init-search)
+
 ;;; init-search.el ends here
