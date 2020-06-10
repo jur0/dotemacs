@@ -139,6 +139,64 @@ This function is meant to be mapped to a key in `rg-mode-map'."
          ("M-n" . rg-next-file)
          ("M-p" . rg-prev-file))))
 
+;; Functions for finding projects (version controlled directories) and files in
+;; the current directory/project.
+(use-package project
+  :config
+  (defun my/find-file-vc-or-dir (&optional arg)
+    "Find file by name that belongs to the current project or dir.
+With \\[universal-argument] match files by contents.  This
+requires the command-line executable called 'rg' or 'ripgrep'."
+    (interactive "P")
+    (let* ((default-directory (file-name-directory
+                               (or (locate-dominating-file "." ".git" )
+                                   default-directory))))
+      (if arg
+          (let* ((regexp (read-regexp
+                          (concat "File contents matching REGEXP in "
+                                  (propertize default-directory 'face 'bold)
+                                  ": ")))
+                 (results (process-lines "rg" "-l" "--hidden" "-m" "1" "-M" "120" regexp)))
+            (find-file
+             (icomplete-vertical-do ()
+               (completing-read (concat
+                                 "Files with contents matching "
+                                 (propertize regexp 'face 'success)
+                                 (format " (%s)" (length results))
+                                 ": ")
+                                results nil t))))
+        (let* ((filenames-all (directory-files-recursively default-directory ".*" nil t))
+               (filenames (cl-remove-if (lambda (x)
+                                          (string-match-p "\\.git" x))
+                                        filenames-all)))
+          (icomplete-vertical-do ()
+            (find-file
+             (completing-read "Find file recursively: " filenames nil t)))))))
+
+  (defun my/find-project (&optional arg)
+    "Switch to sub-directory at the specified locations.
+With \\[universal-argument] produce a `dired' buffer instead with
+all the possible candidates."
+    (interactive "P")
+    ;; TODO: define a constant with project dirs.
+    (let* ((dirs (list "~/data/project/github"))
+           (dotless directory-files-no-dot-files-regexp)
+           (cands (mapcan (lambda (d)
+                            (directory-files d t dotless))
+                          dirs))
+           (projects (mapcar 'abbreviate-file-name cands))
+           (buf "*Projects Dired*"))
+      (if arg
+          (dired (cons (generate-new-buffer-name buf) projects))
+        (icomplete-vertical-do ()
+          (dired
+           (completing-read "Find project: " projects nil t))))))
+
+  :bind
+  (("M-s f" . my/find-file-vc-or-dir)
+   ("M-s p" . my/find-project)
+   ("M-s l" . find-library)))
+
 (provide 'init-search)
 
 ;;; init-search.el ends here
