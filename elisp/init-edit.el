@@ -6,6 +6,12 @@
 
 ;; Set default line length.
 (setq-default fill-column 80)
+;; Determine a paragraph's fill prefix from its text (bulleted and numbered
+;; lists, where it recognises the text's prefix).
+(setq adaptive-fill-mode t)
+;; Keep paragraphs witbin `fill-column' length. This affects text mode and all
+;; major modes derived from it.
+(add-hook 'text-mode-hook #'turn-on-auto-fill)
 
 ;; Set default tab width in spaces.
 (setq-default tab-width 4)
