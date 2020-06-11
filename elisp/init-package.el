@@ -41,6 +41,20 @@
 (use-package diminish
   :ensure t)
 
+;; This is a tool to compile and install packages locally from local or remote
+;; source code. It's useful for packages not available on MELPA.
+(use-package quelpa
+  :ensure t
+  :custom
+  ;; Do not clone MELPA's git repo, only use quelpa for non-MELPA packages.
+  (quelpa-checkout-melpa-p nil))
+
+;; quelpa handler for use-package.
+(use-package quelpa-use-package
+  :ensure t
+  :after
+  (quelpa))
+
 (use-package auto-package-update
   :ensure t
   :custom
@@ -58,3 +72,5 @@
   (auto-package-update-maybe))
 
 (provide 'init-package)
+
+;;; init-package ends here
