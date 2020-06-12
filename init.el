@@ -84,6 +84,8 @@
 
 (require 'init-linter)
 
+(require 'init-spell)
+
 (require 'init-password)
 
 (require 'init-dired)
