@@ -94,4 +94,11 @@
   (("C-." . er/expand-region)
    ("C-," . er/contract-region)))
 
+;; Delete all whitespace characters until the next non-whitespace character.
+(use-package hungry-delete
+  :ensure t
+  :config
+  (setq-default hungry-delete-chars-to-skip " \t\f\v")
+  (global-hungry-delete-mode t))
+
 (provide 'init-edit)
