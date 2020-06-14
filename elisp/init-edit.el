@@ -109,4 +109,10 @@
   (setq-default hungry-delete-chars-to-skip " \t\f\v")
   (global-hungry-delete-mode t))
 
+;; Preview when `goto-char'.
+(use-package goto-char-preview
+  :ensure t
+  :bind
+  ([remap goto-char] . goto-char-preview))
+
 (provide 'init-edit)
