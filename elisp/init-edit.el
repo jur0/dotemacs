@@ -79,6 +79,14 @@
   :config
   (beginend-global-mode t))
 
+;; Change the behaviour of C-a and C-e to move to the beginning/end of line or
+;; code.
+(use-package mwim
+  :ensure t
+  :bind
+  (([remap move-beginning-of-line] . mwim-beginning-of-code-or-line)
+   ([remap move-end-of-line] . mwim-end-of-code-or-line)))
+
 ;; M-w/C-w copies/kills the whole line if region is not active.
 (use-package whole-line-or-region
   :ensure t
