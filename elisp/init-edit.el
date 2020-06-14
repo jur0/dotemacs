@@ -115,4 +115,10 @@
   :bind
   ([remap goto-char] . goto-char-preview))
 
+;; Preview when `goto-line'
+(use-package goto-line-preview
+  :ensure t
+  :bind
+  ([remap goto-line] . goto-line-preview))
+
 (provide 'init-edit)
