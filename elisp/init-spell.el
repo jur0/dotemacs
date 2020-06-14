@@ -1,9 +1,10 @@
 ;;; Code:
 
+(require 'init-const)
+
 ;; On-the-fly checking and highlighting of misspellings.
 (use-package flyspell
-  :if
-  (executable-find "aspell")
+  :if exec/aspell
   :custom
   (ispell-program-name "aspell")
   (ispell-dictionary "en_GB")
@@ -30,8 +31,7 @@
 
 ;; Show popup with available corrections when point is on a misspelled word.
 (use-package flyspell-popup
-  :if
-  (executable-find "aspell")
+  :if exec/aspell
   :ensure t
   :custom
   (flyspell-popup-correct-delay 1.0)

@@ -1,5 +1,7 @@
 ;;; Code:
 
+(require 'init-const)
+
 ;; TODO: write how to use Isearch.
 (use-package isearch
   :config
@@ -85,7 +87,7 @@ afterwards exit the search altogether."
 ;; Ripgrep is used instead of grep as it is faster especially for large files
 ;; with source code.
 (use-package rg
-  :if (executable-find "rg")
+  :if exec/rg
   :ensure t
   :after
   (wgrep)

@@ -32,4 +32,16 @@
   (string-equal "root" (getenv "USER"))
   "Are you a ROOT user?")
 
+(defconst exec/rg
+  (executable-find "rg")
+  "Is ripgrep present?")
+
+(defconst exec/aspell
+  (executable-find "aspell")
+  "Is aspell present?")
+
+(defconst exec/pass
+  (executable-find "pass")
+  "Is pass present?")
+
 (provide 'init-const)
