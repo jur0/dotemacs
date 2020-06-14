@@ -95,12 +95,14 @@
   (unbind-key "s-x" whole-line-or-region-local-mode-map)
   (whole-line-or-region-global-mode t))
 
-;; Expand/contract sexp.
+;; Mark region, symbol, etc.
 (use-package expand-region
   :ensure t
+  :pin gnu
   :bind
-  (("C-." . er/expand-region)
-   ("C-," . er/contract-region)))
+  (("C-=" . er/expand-region)
+   ("C-M-=" . er/mark-outside-pairs)
+   ("C-+" . er/mark-symbol)))
 
 ;; Delete all whitespace characters until the next non-whitespace character.
 (use-package hungry-delete
