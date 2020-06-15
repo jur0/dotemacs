@@ -95,3 +95,9 @@
 (require 'init-highlight)
 
 (require 'init-scroll)
+
+(require 'init-org)
+
+(provide 'init)
+
+;;; init.el ends here
