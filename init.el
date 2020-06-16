@@ -98,6 +98,8 @@
 
 (require 'init-org)
 
+(require 'init-vc)
+
 (provide 'init)
 
 ;;; init.el ends here
