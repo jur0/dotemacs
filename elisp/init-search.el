@@ -2,6 +2,8 @@
 
 (require 'init-const)
 
+(defconst my/project-public-directory "~/data/project/github/")
+
 ;; TODO: write how to use Isearch.
 (use-package isearch
   :config
@@ -181,7 +183,7 @@ With \\[universal-argument] produce a `dired' buffer instead with
 all the possible candidates."
     (interactive "P")
     ;; TODO: define a constant with project dirs.
-    (let* ((dirs (list "~/data/project/github"))
+    (let* ((dirs (list my/project-public-directory))
            (dotless directory-files-no-dot-files-regexp)
            (cands (mapcan (lambda (d)
                             (directory-files d t dotless))
