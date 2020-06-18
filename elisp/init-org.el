@@ -168,6 +168,12 @@
                ":CREATED:  %U\n"
                ":END:\n")))))
 
+(use-package org-protocol
+  :after
+  (org)
+  :config
+  (add-to-list 'org-modules 'org-protocol t))
+
 (provide 'init-org)
 
 ;;; init-org.el ends here
