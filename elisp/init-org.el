@@ -1,5 +1,8 @@
 ;;; Code:
 
+(require 'init-const)
+
+;; Org main directory
 (defconst my/org-directory "~/org")
 
 ;; Org agenda related files.
@@ -7,6 +10,9 @@
 (defconst my/org-projects-file (expand-file-name "projects.org" my/org-directory))
 (defconst my/org-actions-file (expand-file-name "actions.org" my/org-directory))
 (defconst my/org-repeaters-file (expand-file-name "repeaters.org" my/org-directory))
+
+;; Org Roam directory
+(defconst my/org-roam-directory (expand-file-name "roam/" my/org-directory))
 
 (use-package org
   :custom
@@ -173,6 +179,42 @@
   (org)
   :config
   (add-to-list 'org-modules 'org-protocol t))
+
+(use-package org-roam
+  :if exec/sqlite3
+  :ensure t
+  :demand t
+  :custom
+  (org-roam-directory my/org-roam-directory)
+  :config
+  (setq org-roam-capture-templates
+   `(("d" "default" plain
+      (function org-roam--capture-get-point)
+      "%?"
+      :file-name "%<%Y%m%d%H%M%S>-${slug}"
+      :head ,(concat "#+TITLE: ${title}\n"
+                     "#+ROAM_ALIAS: \n"
+                     "+CREATED: %U\n"
+                     "#+LAST_MODIFIED: %U\n\n")
+      :unnarrowed t)
+     ("r" "ref" plain
+      (function org-roam--capture-get-point)
+      ""
+      :file-name "refs/${slug}"
+      :head ,(concat "#+TITLE: ${title}\n"
+                     "#+ROAM_KEY: ${ref}\n"
+                     "#+CREATED: %U\n"
+                     "#+LAST_MODIFIED: %U\n\n")
+      :unnarrowed t)))
+  :bind
+  (:map org-roam-mode-map
+        (("C-c n l" . org-roam)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n f" . org-roam-find-file)
+         ("C-c n b" . org-roam-switch-to-buffer)
+         ("C-c n g" . org-roam-graph))
+        :map org-mode-map
+        (("C-c n i" . org-roam-insert))))
 
 (provide 'init-org)
 

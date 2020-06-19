@@ -44,4 +44,8 @@
   (executable-find "pass")
   "Is pass present?")
 
+(defconst exec/sqlite3
+  (executable-find "sqlite3")
+  "Is sqlite3 present?")
+
 (provide 'init-const)
