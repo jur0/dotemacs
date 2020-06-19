@@ -15,6 +15,55 @@
 (defconst my/org-roam-directory (expand-file-name "roam/" my/org-directory))
 
 (use-package org
+  :config
+    ;; https://org-roam.discourse.group/t/update-a-field-last-modified-at-save/321/2
+  (defun my/org-find-time-file-property (property &optional anywhere)
+    "Return the position of the time file PROPERTY if it exists.
+When ANYWHERE is non-nil, search beyond the preamble."
+    (save-excursion
+      (goto-char (point-min))
+      (let ((first-heading
+             (save-excursion
+               (re-search-forward org-outline-regexp-bol nil t))))
+        (when (re-search-forward (format "^#\\+%s:" property)
+                                 (if anywhere nil first-heading)
+                                 t)
+          (point)))))
+
+  (defun my/org-has-time-file-property-p (property &optional anywhere)
+    "Return the position of time file PROPERTY if it is defined.
+As a special case, return -1 if the time file PROPERTY exists but
+is not defined."
+    (when-let ((pos (my/org-find-time-file-property property anywhere)))
+      (save-excursion
+        (goto-char pos)
+        (if (and (looking-at-p " ")
+                 (progn (forward-char)
+                        (org-at-timestamp-p 'lax)))
+            pos
+          -1))))
+
+  (defun my/org-set-time-file-property (property &optional anywhere pos)
+    "Set the time file PROPERTY in the preamble.
+When ANYWHERE is non-nil, search beyond the preamble.
+If the position of the file PROPERTY has already been computed,
+it can be passed in POS."
+    (when-let ((pos (or pos
+                        (my/org-find-time-file-property property))))
+      (save-excursion
+        (goto-char pos)
+        (if (looking-at-p " ")
+            (forward-char)
+          (insert " "))
+        (delete-region (point) (line-end-position))
+        (let* ((now (format-time-string "[%Y-%m-%d %a %H:%M]")))
+          (insert now)))))
+
+  (defun my/org-set-last-modified ()
+    "Update the LAST_MODIFIED file property in the preamble."
+    (when (derived-mode-p 'org-mode)
+      (my/org-set-time-file-property "LAST_MODIFIED")))
+
   :custom
   (org-directory my/org-directory)
   ;; Hide emphasis marker characters, for example '*' for bold text.
@@ -76,6 +125,8 @@
          ("M-n" . outline-next-visible-heading)
          ("M-p" . outline-previous-visible-heading)
          ("<C-M-return>" . org-insert-subheading)))
+  :hook
+  (before-save . my/org-set-last-modified)
   :mode
   ("\\.org\\'" . org-mode))
 
