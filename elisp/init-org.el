@@ -225,6 +225,14 @@ it can be passed in POS."
                ":CREATED:  %U\n"
                ":END:\n")))))
 
+;; TODO: find out how to capture also content from HTML.
+;; (use-pacqkage org-protocol-capture-html
+;;   :if exec/pandoc
+;;   :quelpa
+;;   (org-protocol-capture-html
+;;    :fetcher github
+;;    :repo "alphapapa/org-protocol-capture-html"))
+
 (use-package org-roam
   :if exec/sqlite3
   :ensure t

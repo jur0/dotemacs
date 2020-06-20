@@ -48,4 +48,9 @@
   (executable-find "sqlite3")
   "Is sqlite3 present?")
 
+;; TODO: required by org-protocol-capture-html.
+;; (defconst exec/pandoc
+;;   (executable-find "pandoc")
+;;   "Is pandoc present?")
+
 (provide 'init-const)
