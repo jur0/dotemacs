@@ -225,30 +225,23 @@ it can be passed in POS."
                ":CREATED:  %U\n"
                ":END:\n")))))
 
-(use-package org-protocol
-  :after
-  (org)
-  :config
-  (add-to-list 'org-modules 'org-protocol t))
-
 (use-package org-roam
   :if exec/sqlite3
   :ensure t
-  :demand t
   :custom
   (org-roam-directory my/org-roam-directory)
-  :config
-  (setq org-roam-capture-templates
+  (org-roam-capture-templates
    `(("d" "default" plain
       (function org-roam--capture-get-point)
       "%?"
       :file-name "%<%Y%m%d%H%M%S>-${slug}"
       :head ,(concat "#+TITLE: ${title}\n"
                      "#+ROAM_ALIAS: \n"
-                     "+CREATED: %U\n"
+                     "#+CREATED: %U\n"
                      "#+LAST_MODIFIED: %U\n\n")
-      :unnarrowed t)
-     ("r" "ref" plain
+      :unnarrowed t)))
+  (org-roam-capture-ref-templates
+   `(("r" "ref" plain
       (function org-roam--capture-get-point)
       ""
       :file-name "refs/${slug}"
@@ -257,6 +250,8 @@ it can be passed in POS."
                      "#+CREATED: %U\n"
                      "#+LAST_MODIFIED: %U\n\n")
       :unnarrowed t)))
+  :hook
+  (after-init . org-roam-mode)
   :bind
   (:map org-roam-mode-map
         (("C-c n l" . org-roam)
@@ -266,6 +261,10 @@ it can be passed in POS."
          ("C-c n g" . org-roam-graph))
         :map org-mode-map
         (("C-c n i" . org-roam-insert))))
+
+(use-package org-roam-protocol
+  :after
+  (org-roam))
 
 (provide 'init-org)
 
