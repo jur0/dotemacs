@@ -13,6 +13,9 @@
 
 ;; Org Roam directory
 (defconst my/org-roam-directory (expand-file-name "roam/" my/org-directory))
+;; Org Roam images directory.
+(defconst my/org-roam-images-directory
+  (expand-file-name "images/" my/org-roam-directory))
 
 (use-package org
   :config
@@ -273,6 +276,17 @@ it can be passed in POS."
 (use-package org-roam-protocol
   :after
   (org-roam))
+
+;; TODO: review.
+;; Download images from websites to be used in Roam's knowledge base.
+;; M-x org-download-yank download an image from a link in kill ring.
+(use-package org-download
+  :ensure t
+  :custom
+  (org-download-image-dir my/org-roam-images-directory)
+  :hook
+  ;; Enable drag and drop of images in dired.
+  (dired-mode-hook 'org-download-enable))
 
 (provide 'init-org)
 
