@@ -38,6 +38,10 @@
   (setq show-paren-style 'parenthesis)
   (setq show-paren-when-point-in-periphery t)
   (setq show-paren-when-point-inside-paren t)
-  (show-paren-mode t))
+  (show-paren-mode t)
+  :hook
+  ((text-mode org-agenda-mode) . (lambda ()
+                                   (make-local-variable 'show-paren-mode)
+                                   (setq show-paren-mode nil))))
 
 (provide 'init-highlight)
