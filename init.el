@@ -100,6 +100,8 @@
 
 (require 'init-vc)
 
+(require 'init-monitor)
+
 (provide 'init)
 
 ;;; init.el ends here
