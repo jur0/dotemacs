@@ -2,6 +2,12 @@
 
 (require 'init-const)
 
+;; Force Emacs to use its own internal password prompt instead of an external
+;; pin entry program.
+(use-package epg-config
+  :init
+  (setq epg-pinentry-mode 'loopback))
+
 ;; Major mode for pass.
 (use-package pass
   :if exec/pass
