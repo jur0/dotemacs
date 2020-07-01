@@ -21,6 +21,6 @@
 (use-package list-environment
   :ensure t)
 
-(provide 'init-monitor)
+(provide 'init-os)
 
 ;;; init-monitor.el ends here
