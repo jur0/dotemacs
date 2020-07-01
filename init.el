@@ -102,6 +102,8 @@
 
 (require 'init-os)
 
+(require 'init-lsp)
+
 (provide 'init)
 
 ;;; init.el ends here
