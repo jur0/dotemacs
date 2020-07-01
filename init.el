@@ -100,7 +100,7 @@
 
 (require 'init-vc)
 
-(require 'init-monitor)
+(require 'init-os)
 
 (provide 'init)
 
