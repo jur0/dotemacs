@@ -396,7 +396,7 @@ With \\[universal-argument] toggle the display of the window."
             (imenu-list)))))
 
   :bind
-  ("C-c l" . my/imenu-list-dwim))
+  ("C-c u" . my/imenu-list-dwim))
 
 ;; Text completion framework that uses pluggable backends and frontends to
 ;; retrieve and display completion candidates.
