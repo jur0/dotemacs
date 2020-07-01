@@ -18,6 +18,9 @@
   (:map proced-mode-map
         ("/" . proced-narrow)))
 
+(use-package list-environment
+  :ensure t)
+
 (provide 'init-monitor)
 
 ;;; init-monitor.el ends here
