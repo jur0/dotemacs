@@ -53,8 +53,7 @@
   :bind
   (:map ibuffer-mode-map
         ;; Filter groups on per project basis.
-        ("/ V" . ibuffer-vc-set-filter-groups-by-vc-root)
-        ("/ <deletechar>" . ibuffer-clear-filter-groups)))
+        ("/ V" . ibuffer-vc-set-filter-groups-by-vc-root)))
 
 ;; Make some buffers immortal.
 (defun my/make-immortal-buffers ()
