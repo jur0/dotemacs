@@ -88,7 +88,7 @@
 
 (require 'init-password)
 
-(require 'init-dired)
+(require 'init-file-manager)
 
 (require 'init-buffer)
 
