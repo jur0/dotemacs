@@ -77,7 +77,7 @@
   (setq dired-narrow-blink-time 0.3)
   :bind
   (:map dired-mode-map
-        ("M-s n" . dired-narrow)))
+        ("/" . dired-narrow-regexp)))
 
 ;; Writable dired, activated by C-x C-q.
 (use-package wdired
