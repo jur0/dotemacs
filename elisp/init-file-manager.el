@@ -1,12 +1,14 @@
 ;;; Code:
 
+(defconst my/ls-args
+  "-AGFhlv --group-directories-first --time-style=long-iso")
+
 (use-package dired
   :config
   (setq dired-recursive-copies 'always)
   (setq dired-recursive-deletes 'always)
   ;;dired-auto-revert-buffer t
-  (setq dired-listing-switches
-        "-AGFhlv --group-directories-first --time-style=long-iso")
+  (setq dired-listing-switches my/ls-args)
   ;; If there in another dired buffer, use its current directory as target.
   (setq dired-dwim-target t)
   :hook
@@ -32,7 +34,7 @@
   (dired)
   :config
   (setq find-ls-option
-        '("-ls" . "-AGFhlv --group-directories-first --time-style=long-iso"))
+        `(,(concat "-print0 | xargs -0 ls " my/ls-args) . ""))
   ;; Ignore case.
   (setq find-name-arg "-iname"))
 
