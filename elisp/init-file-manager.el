@@ -116,4 +116,36 @@
   :hook
   (dired-mode . diredfl-mode))
 
-(provide 'init-dired)
+;; Enable file previews.
+(use-package peep-dired
+  :ensure t
+  :after
+  (dired)
+  :config
+  (setq peep-dired-cleanup-on-disable t)
+  (setq peep-dired-cleanup-eagerly t)
+  (setq peep-dired-enable-on-directories nil)
+  (setq peep-dired-ignored-extensions
+        '("mkv" "webm" "mp4" "mp3" "ogg" "iso"))
+  :bind
+  (:map dired-mode-map
+        ("P" . peep-dired)))
+
+;; Show images in a directory as thumbnails.
+;; M-x image-dired
+(use-package image-dired
+  :commands
+  (image-dired)
+  :config
+  (setq image-dired-external-viewer "open")
+  (setq image-dired-thumb-size 80)
+  (setq image-dired-thumb-margin 2)
+  (setq image-dired-thumb-relief 0)
+  (setq image-dired-thumbs-per-row 4)
+  :bind
+  (:map image-dired-thumbnail-mode-map
+        ("<return>" . image-dired-thumbnail-display-external)))
+
+(provide 'init-file-manager)
+
+;;; init-file-manager ends here
