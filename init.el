@@ -1,7 +1,7 @@
 ;;; Code:
 
-(when (version< emacs-version "27.0.90")
-  (error "Emacs 27.0.90 or newer versions are required!"))
+(when (version< emacs-version "27.1")
+  (error "Emacs 27.1 or newer versions are required!"))
 
 (defvar gc-cons-threshold-default
   (if (display-graphic-p) 16000000 1600000)
@@ -103,6 +103,8 @@
 (require 'init-os)
 
 (require 'init-lsp)
+
+(require 'init-rust)
 
 (provide 'init)
 
