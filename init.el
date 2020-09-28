@@ -12,6 +12,7 @@
   "The upper limit value for `gc-cons-threshold' to defer it.")
 
 (defun my/setup-default-startup-values ()
+  "Setup default startup values."
   (setq gc-cons-threshold gc-cons-threshold-default)
   (setq gc-cons-percentage gc-cons-percentage-default)
   (setq file-name-handler-alist file-name-handler-alist-default)
@@ -20,16 +21,26 @@
 
 ;; https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 (defun my/minibuffer-setup-hook ()
+  "Setup `gc-cons-threshold' to a large number.
+
+When minibuffer is open, garbage collection never occurs so there
+is no freezing."
   (setq gc-cons-threshold gc-cons-threshold-upper-limit))
 
 (defun my/minibuffer-exit-hook ()
+  "Setup `gc-cons-threshold' to a small number.
+
+When a selection is made or minibuffer is cancelled, garbage
+collection kicks off."
   (setq gc-cons-threshold gc-cons-threshold-default))
 
 (defun my/garbage-collect-when-minibuffer-exit ()
+  "Setup setup and exit hooks for minibuffer."
   (add-hook 'minibuffer-setup-hook #'my/minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my/minibuffer-exit-hook))
 
 (defun my/garbage-collect-when-unfocused ()
+  "Setup garbage collection when unfocused."
   (if (boundp 'after-focus-change-function)
       (add-function :after after-focus-change-function
                     (lambda ()
