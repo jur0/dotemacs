@@ -75,3 +75,5 @@
 (load custom-file 'noerror)
 
 (provide 'init-global)
+
+;;; init-global.el ends here
