@@ -6,7 +6,7 @@
 (when (fboundp 'set-charset-priority)
   (set-charset-priority 'unicode))
 
-;; Explicitly set the prefered coding systems (UTF-8).
+;; Explicitly set the preferred coding systems (UTF-8).
 (prefer-coding-system 'utf-8)
 (setq locale-coding-system 'utf-8)
 
