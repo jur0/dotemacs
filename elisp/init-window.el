@@ -55,23 +55,10 @@
 
 ;; Keep a record of buffer and window layout changes.
 (use-package winner
-  :custom
-  ;; List of buffer names which won't be restored.
-  (winner-boring-buffers
-   '("*Completions*"
-     "*Compile-Log*"
-     "*inferior-lisp*"
-     "*Fuzzy Completions*"
-     "*Apropos*"
-     "*Help*"
-     "*cvs*"
-     "*Buffer List*"
-     "*Ibuffer*"
-     "*esh command on file*"))
-  :config
-  (winner-mode t)
   :commands
   (winner-undo winner-redo)
+  :config
+  (winner-mode t)
   :bind
   ("<s-right>" . winner-redo)
   ("<s-left>" . winner-undo))
