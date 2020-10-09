@@ -74,13 +74,11 @@
   :config
   (ns-auto-titlebar-mode t))
 
-(use-package doom-themes
+(use-package modus-vivendi-theme
   :ensure t
   :config
-  (setq doom-themes-enable-bold t)
-  (setq doom-themes-enable-italic t)
-  (doom-themes-org-config)
-  (load-theme 'doom-molokai t))
+  (setq modus-vivendi-theme-fringes 'subtle)
+  (load-theme 'modus-vivendi t))
 
 (use-package doom-modeline
   :ensure t
