@@ -31,6 +31,17 @@
 ;; Disable iconify-frame.
 (global-unset-key (kbd "s-m"))
 
+;; https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
+;; Reduce the number of line scans that check for Arabic language chars
+;; that are read from right to left.
+(setq-default bidi-paragraph-direction 'left-to-right)
+;; Disable Bidirectional Parentheses Algorithm (used in right-to-left
+;; languages).
+(setq bidi-inhibit-bpa t)
+;; Disable slow minor modes when reading very long lines to speed up
+;; Emacs.
+(global-so-long-mode t)
+
 ;; Environment (PATH and MANPATH) for MacOS and Linux. It's useful when Emacs is
 ;; not started from the console, but rather from GUI i.e. clicking on icon.
 (when (or sys/mac-cocoa-p sys/linux-x-p sys/mac-x-p)
