@@ -5,11 +5,11 @@
 (setq-default major-mode 'text-mode)
 
 ;; Set default line length.
-(setq-default fill-column 80)
+(setq-default fill-column 72)
 ;; Determine a paragraph's fill prefix from its text (bulleted and numbered
 ;; lists, where it recognises the text's prefix).
 (setq adaptive-fill-mode t)
-;; Keep paragraphs witbin `fill-column' length. This affects text mode and all
+;; Keep paragraphs within `fill-column' length. This affects text mode and all
 ;; major modes derived from it.
 (add-hook 'text-mode-hook #'turn-on-auto-fill)
 
@@ -124,3 +124,5 @@
   ([remap goto-line] . goto-line-preview))
 
 (provide 'init-edit)
+
+;;; init-edit.el ends here

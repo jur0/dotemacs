@@ -15,7 +15,6 @@
   (magit)
   :config
   (setq git-commit-summary-max-length 50)
-  (setq fill-column 72)
   (setq git-commit-known-pseudo-headers
         '("Signed-off-by"
           "Acked-by"
