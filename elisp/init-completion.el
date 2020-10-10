@@ -9,7 +9,7 @@
   :init
   (icomplete-mode)
   :config
-  (setq orderless-component-separator "[/\s_-]+")
+  (setq orderless-component-separator " +")
   (setq orderless-matching-styles
         '(;; The characters of the component should appear in that order in the
           ;; candidate, but not necessarily consecutively. This maps 'abc' to
@@ -54,7 +54,7 @@
           my/orderless-initialism-dispatcher))
   :bind
   (:map minibuffer-local-completion-map
-        ;; Space should never complete.
+        ;; Space should never complete. Use it for orderless group.
         ("SPC" . nil)))
 
 (use-package minibuffer
