@@ -39,7 +39,9 @@
 
 ;; Required by `use-package' for :diminish.
 (use-package diminish
-  :ensure t)
+  :ensure t
+  :after
+  (use-package))
 
 ;; This is a tool to compile and install packages locally from local or remote
 ;; source code. It's useful for packages not available on MELPA.
