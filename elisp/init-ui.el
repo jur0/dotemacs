@@ -78,6 +78,7 @@
   :ensure t
   :config
   (setq modus-vivendi-theme-fringes 'subtle)
+  (setq modus-vivendi-theme-bold-constructs t)
   (load-theme 'modus-vivendi t))
 
 (use-package doom-modeline
@@ -110,3 +111,5 @@
     (all-the-icons-install-fonts t)))
 
 (provide 'init-ui)
+
+;;; init-ui.el ends here
