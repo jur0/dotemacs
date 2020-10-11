@@ -168,14 +168,21 @@ key in `completion-list-mode-map'."
               (interactive)
               (my/describe-symbol-at-point '(4))))
    ("s-v" . my/focus-minibuffer-or-completions)
-  (:map completion-list-mode-map
-        ("n" . next-line)
-        ("p" . previous-line)
-        ("f" . next-completion)
-        ("b" . previous-completion)
-        ("h" . my/describe-symbol-at-point)
-        ("w" . my/completions-kill-save-symbol)
-        ("M-v" . my/focus-minibuffer))))
+   (:map minibuffer-local-completion-map
+         ;; Expand the current candidate and then exit the session, if
+         ;; possible.
+         ("<return>" . minibuffer-force-complete-and-exit)
+         ;; Insert the minibuffer content as it is exactly (without
+         ;; expansion) and exit the session.
+         ("C-j" . exit-minibuffer))
+   (:map completion-list-mode-map
+         ("n" . next-line)
+         ("p" . previous-line)
+         ("f" . next-completion)
+         ("b" . previous-completion)
+         ("h" . my/describe-symbol-at-point)
+         ("w" . my/completions-kill-save-symbol)
+         ("M-v" . my/focus-minibuffer))))
 
 ;; Front-end for completions.
 (use-package icomplete
