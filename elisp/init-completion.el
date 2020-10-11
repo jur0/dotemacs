@@ -90,6 +90,8 @@
   (setq resize-mini-windows t)
   ;; Make "unimportant" part of filename in minibuffer visually less noticeable.
   (file-name-shadow-mode t)
+  ;; Shorten "(default ...)" to "[...]".
+  (setq minibuffer-eldef-shorten-default t)
   ;; Show recursion depth in minibuffer (related to
   ;; enable-recursive-minibuffers).
   (minibuffer-depth-indicate-mode t)
