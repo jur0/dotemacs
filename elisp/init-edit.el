@@ -129,6 +129,34 @@
   :hook
   (prog-mode . subword-mode))
 
+;; https://protesilaos.com/dotemacs/#h:fa56241c-6840-4a39-8f59-18460d37fc69
+(use-package newcomment
+  :config
+  (setq comment-empty-lines t)
+  (setq comment-fill-column nil)
+  (setq comment-multi-line t)
+  (setq comment-style 'multi-line)
+
+  (defun my/comment-dwim (&optional arg)
+    "Alternative to `comment-dwim': offers a simple wrapper
+around `comment-line' and `comment-dwim'.
+
+If the region is active, then toggle the comment status of the
+region or, if the major mode defines as much, of all the lines
+implied by the region boundaries.
+
+Else toggle the comment status of the line at point."
+    (interactive "*P")
+    (if (use-region-p)
+        (comment-dwim arg)
+      (save-excursion
+        (comment-line arg))))
+
+  :bind (("C-;" . my/comment-dwim)
+         ("C-:" . comment-kill)
+         ("M-;" . comment-indent)
+         ("C-x C-;" . comment-box)))
+
 (provide 'init-edit)
 
 ;;; init-edit.el ends here
