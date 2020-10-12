@@ -5,36 +5,35 @@
 ;; On-the-fly checking and highlighting of misspellings.
 (use-package flyspell
   :if exec/aspell
-  :custom
-  (ispell-program-name "aspell")
-  (ispell-dictionary "en_GB")
-  (ispell-silently-savep t)
+  :config
+  (setq ispell-program-name "aspell")
+  (setq ispell-dictionary "en_GB")
+  (setq ispell-silently-savep t)
   ;; --sug-mode=ultra is a suggestion mode, ultra gives the best candidates (but
   ;; is the slowest).
   ;; --run-together can check camel case words. Also aspell process with this
   ;; option can be reused.
-  (ispell-extra-args '("--sug-mode=ultra" "--run-together"))
+  (setq ispell-extra-args '("--sug-mode=ultra" "--run-together"))
   ;; Do not show welcome message when flyspell starts.
-  (flyspell-issue-welcome-flag nil)
+  (setq flyspell-issue-welcome-flag nil)
   ;; Do not show messages when checking words.
-  (flyspell-issue-message-flag nil)
-  :bind
-  (:map flyspell-mode-map
-        ("C-;" . nil)
-        ("C-." . nil)
-        ("C-," . nil))
+  (setq flyspell-issue-message-flag nil)
   :hook
   (((text-mode outline-mode) . flyspell-mode)
    ;; Check comments and strings in source code.
-   (prog-mode . flyspell-prog-mode)
-   (before-save-hook . flyspell-buffer)))
+   (prog-mode . flyspell-prog-mode))
+  :bind
+  ;; Toggle flyspell mode.
+  (("C-$" . flyspell-mode)
+   (:map flyspell-mode-map
+         ;; This keybinding is used by `newcomment'.
+         ("C-;" . nil))))
 
-;; Show popup with available corrections when point is on a misspelled word.
 (use-package flyspell-popup
   :if exec/aspell
   :ensure t
-  :custom
-  (flyspell-popup-correct-delay 1.0)
+  :config
+  (setq flyspell-popup-correct-delay 1.0)
   :hook
   (flyspell-mode . flyspell-popup-auto-correct-mode))
 
