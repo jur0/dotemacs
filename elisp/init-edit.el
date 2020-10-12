@@ -123,6 +123,12 @@
   :bind
   ([remap goto-line] . goto-line-preview))
 
+;; Change the way Emacs treats word boundaries. For example, "CamelCase"
+;; are two words as well as "foo_bar".
+(use-package subword
+  :hook
+  (prog-mode . subword-mode))
+
 (provide 'init-edit)
 
 ;;; init-edit.el ends here
