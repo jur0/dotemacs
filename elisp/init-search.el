@@ -62,13 +62,13 @@ afterwards exit the search altogether."
   :bind
   (("M-s M-o" . multi-occur)
    ("M-s %" . my/isearch-query-replace-symbol-at-point)
-   :map minibuffer-local-isearch-map
-   ("M-/" . isearch-complete-edit)
-   :map isearch-mode-map
-   ("M-/" . isearch-complete)
-   ("C-SPC" . my/isearch-mark-and-exit)
-   ("C-d" . my/isearch-abort)
-   ("<C-return>" . my/isearch-other-end)))
+   (:map minibuffer-local-isearch-map
+         ("M-/" . isearch-complete-edit))
+   (:map isearch-mode-map
+         ("M-/" . isearch-complete)
+         ("C-SPC" . my/isearch-mark-and-exit)
+         ("C-d" . my/isearch-abort)
+         ("<C-return>" . my/isearch-other-end))))
 
 ;; Editable (writable) grep buffer. It possible to have a list of all search
 ;; matches in a grep/occur buffer and edit those matches using wgrep.
