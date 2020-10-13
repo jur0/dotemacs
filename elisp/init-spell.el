@@ -18,13 +18,24 @@
   (setq flyspell-issue-welcome-flag nil)
   ;; Do not show messages when checking words.
   (setq flyspell-issue-message-flag nil)
-  :hook
-  (((text-mode outline-mode) . flyspell-mode)
-   ;; Check comments and strings in source code.
-   (prog-mode . flyspell-prog-mode))
+
+  (defun my/flyspell-mode-dwim ()
+    "Toggle `flyspell-mode' or `flyspell-prog-mode'."
+    (interactive)
+    ;; To spellcheck only comments in `prog-mode', `flyspell-prog-mode'
+    ;; is used. Other modes use `flyspell-mode' to turn on
+    ;; spellcheck. To disable spellcheck, `flyspell-mode' is used in all
+    ;; modes.
+    (if (bound-and-true-p flyspell-mode)
+          (call-interactively 'flyspell-mode)
+      (if (derived-mode-p 'prog-mode)
+          (call-interactively 'flyspell-prog-mode)
+        (call-interactively 'flyspell-mode))
+      (message "Flyspell mode enabled in current buffer")))
+
   :bind
   ;; Toggle flyspell mode.
-  (("C-$" . flyspell-mode)
+  (("C-c s s" . my/flyspell-mode-dwim)
    (:map flyspell-mode-map
          ;; This keybinding is used by `newcomment'.
          ("C-;" . nil))))
