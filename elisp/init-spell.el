@@ -50,13 +50,15 @@
         (call-interactively 'flyspell-correct-wrapper))))
 
   :bind
-  (:map flyspell-mode-map
+  ;; To enable the mode, this keybind must be available even when the
+  ;; package is not loaded.
+  (("C-c s s" . my/flyspell-mode-dwim)
+   (:map flyspell-mode-map
          ;; This keybinding is used by `newcomment'.
-        ("C-;" . nil)
-        ("C-." . nil)
-        ("C-," . nil)
-        ("C-c s s" . my/flyspell-mode-dwim)
-        ("C-c s c" . my/flyspell-correct-dwim)))
+         ("C-;" . nil)
+         ("C-." . nil)
+         ("C-," . nil)
+         ("C-c s c" . my/flyspell-correct-dwim))))
 
 (provide 'init-spell)
 
