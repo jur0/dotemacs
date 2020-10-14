@@ -2,7 +2,10 @@
 
 (require 'init-const)
 
-;; On-the-fly checking and highlighting of misspellings.
+;; On-the-fly checking and highlighting of misspelling. It's disabled by
+;; default. When it's enabled, it highlights misspelled words. They can
+;; be corrected with `C-c s c' (`flyspell-correct' is used for
+;; correction).
 (use-package flyspell
   :if exec/aspell
   :config
@@ -17,7 +20,12 @@
   ;; Do not show welcome message when flyspell starts.
   (setq flyspell-issue-welcome-flag nil)
   ;; Do not show messages when checking words.
-  (setq flyspell-issue-message-flag nil)
+  (setq flyspell-issue-message-flag nil))
+
+(use-package flyspell-correct
+  :if exec/aspell
+  :ensure t
+  :config
 
   (defun my/flyspell-mode-dwim ()
     "Toggle `flyspell-mode' or `flyspell-prog-mode'."
@@ -33,31 +41,22 @@
         (call-interactively 'flyspell-mode))
       (message "Flyspell mode enabled in current buffer")))
 
+  (defun my/flyspell-correct-dwim ()
+    "Correct multiple spelling errors."
+    (interactive)
+    (when (bound-and-true-p flyspell-mode)
+      ;; Call with `C-u' prefix (spelling backwards).
+      (let ((current-prefix-arg 4))
+        (call-interactively 'flyspell-correct-wrapper))))
+
   :bind
-  ;; Toggle flyspell mode.
-  (("C-c s s" . my/flyspell-mode-dwim)
-   (:map flyspell-mode-map
+  (:map flyspell-mode-map
          ;; This keybinding is used by `newcomment'.
-         ("C-;" . nil))))
-
-(use-package flyspell-popup
-  :if exec/aspell
-  :ensure t
-  :config
-  (setq flyspell-popup-correct-delay 1.0)
-  :hook
-  (flyspell-mode . flyspell-popup-auto-correct-mode))
-
-;; TODO: check if flycheck-aspell is better than flyspell.
-;; (use-package flycheck-aspell
-;;   :if
-;;   (and (executable-find "aspell") (executable-find "sed"))
-;;   :quelpa
-;;   (flycheck-aspell :fetcher github :repo "leotaku/flycheck-aspell")
-;;   :custom
-;;   (ispell-program-name "aspell")
-;;   (ispell-dictionary "en_GB")
-;;   (ispell-silently-savep t))
+        ("C-;" . nil)
+        ("C-." . nil)
+        ("C-," . nil)
+        ("C-c s s" . my/flyspell-mode-dwim)
+        ("C-c s c" . my/flyspell-correct-dwim)))
 
 (provide 'init-spell)
 
