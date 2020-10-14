@@ -8,7 +8,6 @@
           ;; Bottom side of display.
           ("\\*Calendar.*"
            (display-buffer-in-side-window)
-           ;; Integer in `window-height' specifies number of lines.
            (window-height . 20)
            (side . bottom)
            (slot . -1))
@@ -28,19 +27,24 @@
            (window-height . 20)
            (side . bottom)
            (slot . 2))
+          ("\\*Flycheck errors.*"
+           (display-buffer-in-side-window)
+           (window-height . 20)
+           (side . bottom)
+           (slot . 3))
           ;; Right side of display.
           ("\\*\\(Help\\|Apropos|Man\\)\\*"
            (display-buffer-in-side-window)
-           ;; Adjust the width of the window based on buffer's content width.
            (window-width . fit-window-to-buffer)
            (side . right)
            (slot . 0))))
   (setq window-resize-pixelwise t)
   ;; Resize window combinations proportionally.
   (setq window-combination-resize t)
-  (setq fit-window-to-buffer-horizontally t)
+  (setq fit-window-to-buffer-horizontally 'only)
   (setq even-window-sizes 'height-only)
   (setq window-sides-vertical nil)
+  (setq switch-to-buffer-in-dedicated-window 'pop)
   :bind
   (("s-n" . next-buffer)
    ("s-p" . previous-buffer)
