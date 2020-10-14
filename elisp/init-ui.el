@@ -60,6 +60,18 @@
   ;; Show line number in mode line.
   (setq line-number-mode t))
 
+;; Fringes are areas on both left and right side of Emacs frame. They
+;; are used for showing indicators, such as linting errors, continuation
+;; lines, etc.
+(use-package fringe
+  :config
+  ;; `nil' means the default width of 8 px.
+  (fringe-mode nil)
+  (setq-default fringes-outside-margins nil)
+  (setq-default indicate-buffer-boundaries nil)
+  (setq-default indicate-empty-lines nil)
+  (setq-default overflow-newline-into-fringe t))
+
 ;; Frame title.
 (setq frame-title-format
       `(,(user-login-name) "@" ,(system-name) "   "
