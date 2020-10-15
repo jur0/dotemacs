@@ -57,6 +57,16 @@
    ("C-x +" . balance-windows-area)
    ("s-q" . window-toggle-side-windows)))
 
+;; Switch windows more effeciently (if there are more than two windows).
+(use-package ace-window
+  :ensure t
+  :config
+  ;; Call `other-window' if there are just 2 windows.
+  (setq aw-dispatch-always nil)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :bind
+  ([remap other-window] . ace-window))
+
 ;; Keep a record of buffer and window layout changes.
 (use-package winner
   :commands
