@@ -32,6 +32,11 @@
            (window-height . 20)
            (side . bottom)
            (slot . 3))
+          ("\\*Register Preview.*"
+           (display-buffer-in-side-window)
+           (window-height . 20)
+           (side . bottom)
+           (slot . 3))
           ;; Right side of display.
           ("\\*\\(Help\\|Apropos|Man\\)\\*"
            (display-buffer-in-side-window)
@@ -76,6 +81,57 @@
   :bind
   ("<s-right>" . winner-redo)
   ("<s-left>" . winner-undo))
+
+
+;;   (defmacro my/with-advice (adlist &rest body)
+;;     "Execute BODY with temporary advice in ADLIST.
+
+;; Each element of ADLIST should be a list of the form
+;; (SYMBOL WHERE FUNCTION [PROPS])
+;; suitable for passing to `advice-add'.  The BODY is wrapped in an
+;; `unwind-protect' form, so the advice will be removed even in the
+;; event of an error or nonlocal exit."
+;;     (declare (debug ((&rest (&rest form)) body))
+;;              (indent 1))
+;;     `(progn
+;;        ,@(mapcar (lambda (adform)
+;;                    (cons 'advice-add adform))
+;;                  adlist)
+;;        (unwind-protect (progn ,@body)
+;;          ,@(mapcar (lambda (adform)
+;;                      `(advice-remove ,(car adform) ,(nth 2 adform)))
+;;                    adlist))))
+
+
+;;   (defun my/org-todo-fast-selection (orig-fn &rest args)
+;;     "Advice to fix window placement in `org-todo-fast-selection'."
+;;     (my/with-advice
+;;         (;; Make Org-mode respect `display-buffer-alist'.
+;;          (#'org-switch-to-buffer-other-window :override #'pop-to-buffer)
+;;          (#'split-window :override #'ignore)
+;;          ;; And stop Org-mode from messing with our window configuration.
+;;          (#'delete-other-windows :override #'ignore))
+;;       (apply orig-fn args)))
+
+;;   (advice-add #'org-fast-todo-selection :around #'my/org-todo-fast-selection)
+
+;;   (defun my/org-agenda-commands (orig-fn &rest args)
+;;     "Advice to fix window placement in `org-todo-fast-selection'."
+;;     (my/with-advice
+;;         (;; Make Org-mode respect `display-buffer-alist'.
+;;          (#'org-switch-to-buffer-other-window :override #'pop-to-buffer)
+;;          ;; And stop Org-mode from messing with our window configuration.
+;;          (#'delete-other-windows :override #'ignore))
+;;       (apply orig-fn args)))
+
+
+          ;; ("\\*Org todo.*"
+          ;;  (display-buffer-in-side-window)
+          ;;  (window-height . fit-window-to-buffer)
+          ;;  (side . top)
+          ;;  (slot . 0))
+          ;; Right side of display.
+
 
 (provide 'init-window)
 
