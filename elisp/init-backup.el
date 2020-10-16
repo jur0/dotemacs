@@ -13,8 +13,11 @@
   (setq desktop-auto-save-timeout 60)
   ;; Number of buffers to restore immediately.
   (setq desktop-restore-eager 10)
-  ;; Restore frames and windows/workspaces (with their positions etc.) - works
-  ;; well with `eyebrowse' (init-workspace.el).
+  ;; Restore frames and windows/workspaces (with their positions etc.) -
+  ;; works well with `eyebrowse' (init-workspace.el).  Alternatively,
+  ;; there is `C-x r f' to store frame/window layout into a register, it
+  ;; can be read using `C-x r j'.
+  ;; Also, there is `winner-mode'.
   (setq desktop-restore-frames t)
   ;; Regexp identifying files to be excluded from saving.
   (setq desktop-files-not-to-save nil)
@@ -148,3 +151,5 @@ The user's $HOME directory is abbreviated as a tilde."
   (global-undo-tree-mode t))
 
 (provide 'init-backup)
+
+;;; init-backup.el ends here
