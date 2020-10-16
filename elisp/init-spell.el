@@ -46,7 +46,7 @@
     (interactive)
     (when (bound-and-true-p flyspell-mode)
       ;; Call with `C-u' prefix (spelling backwards).
-      (let ((current-prefix-arg 4))
+      (let ((current-prefix-arg '(4)))
         (call-interactively 'flyspell-correct-wrapper))))
 
   :bind
