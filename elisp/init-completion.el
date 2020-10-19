@@ -439,7 +439,7 @@ With \\[universal-argument] toggle the display of the window."
 
 ;; In buffer completion framework built into Emacs (and company backend
 ;; configured via `company-dabbrev'). It reads all the text before the point and
-;; tris to find a suitable match (it can be set to search the whole buffer or
+;; tries to find a suitable match (it can be set to search the whole buffer or
 ;; other buffers, too). It helps to type what has been written before.
 (use-package dabbrev
   :after
