@@ -72,6 +72,18 @@
   (setq-default indicate-empty-lines nil)
   (setq-default overflow-newline-into-fringe t))
 
+;; Move mouse pointer away from to screen (to the top right corner)
+;; automatically.
+(use-package avoid
+  :config
+  (setq mouse-avoidance-banish-position
+        '((frame-or-window . frame)
+          (side . right)
+          (side-pos . 0)
+          (top-or-bottom . top)
+          (top-or-bottom-pos . 0)))
+  (mouse-avoidance-mode 'animate))
+
 ;; Frame title.
 (setq frame-title-format
       `(,(user-login-name) "@" ,(system-name) "   "
