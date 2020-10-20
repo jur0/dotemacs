@@ -52,6 +52,9 @@
 ;; Delete trailing whitespace before saving buffer.
 (add-hook 'before-save-hook #'my/delete-trailing-whitespace-except-current-line)
 
+;; Delete blank lines using 'M-o' (the same as 'C-x C-o').
+(define-key global-map (kbd "M-o") 'delete-blank-lines)
+
 ;; Automatically revert buffers when files on disk change.
 (use-package autorevert
   :config
