@@ -4,17 +4,17 @@
   :ensure t
   :init
   ;; Increase max number of bytes read from subprocess in a single chunk.
-  (setq read-process-output-max (* 1024 1024)):config
+  (setq read-process-output-max (* 1024 1024))
   :config
   (setq lsp-keymap-prefix "C-c p")
   (setq lsp-keep-workspace-alive nil)
-  (setq lsp-prefer-capf t)
   (setq lsp-enable-semantic-highlighting t)
-  (setq lsp-diagnostics-modeline-scope :project)
-  ;; Disable doc helper buffer.
-  ;; (setq lsp-signature-auto-activate nil)
+  (setq lsp-modeline-diagnostics-enable t)
+  (setq lsp-modeline-diagnostics-scope :project)
+  (setq lsp-headerline-breadcrumb-enable t)
+  (setq lsp-headerline-breadcrumb-segments '(project file symbols))
   :hook
-  (lsp-managed-mode . lsp-diagnostics-modeline-mode)
+  (lsp-mode . lsp-enable-which-key-integration)
   :bind
   (:map lsp-mode-map
         ([remap xref-find-definitions] . lsp-find-definition)
@@ -22,14 +22,14 @@
 
 (use-package lsp-ui
   :ensure t
+  :commands
+  (lsp-ui-mode)
   :after
   (lsp-mode flycheck)
   :config
   (setq lsp-ui-doc-position 'bottom)
-  (setq lsp-ui-doc-delay 1.5)
-  (setq lsp-ui-sideline-delay 1.5)
-  :hook
-  (lsp-mode . lsp-ui-mode))
+  (setq lsp-ui-doc-delay 2.0)
+  (setq lsp-ui-sideline-delay 1.5))
 
 (provide 'init-lsp)
 
