@@ -82,6 +82,29 @@
   ("<s-right>" . winner-redo)
   ("<s-left>" . winner-undo))
 
+;; https://protesilaos.com/dotemacs/#h:12591f89-eeea-4b12-93e8-9293504e5a12
+(defvar my/window-configuration nil
+  "Current window configuration.
+Intended for use by my/window-monocle-mode.")
+
+(define-minor-mode my/window-monocle-mode
+  "Toggle between single (zoomed in) window and multiple windows.
+This makes it possible to maximise a window and later switch back
+to original window configuration."
+  ;; Not working for doom-modeline (all minor modes are off).
+  :lighter " [M]"
+  :global nil
+  (if (one-window-p)
+      (when my/window-configuration
+        (set-window-configuration my/window-configuration))
+    (setq my/window-configuration (current-window-configuration))
+    (delete-other-windows)
+    ;; Show monocle indicator in modeline using `mode-line-misc-info'.
+    (add-to-list 'mode-line-misc-info
+                 '(my/window-monocle-mode "[M]"))))
+
+(define-key global-map (kbd "s-m") 'my/window-monocle-mode)
+
 
 ;;   (defmacro my/with-advice (adlist &rest body)
 ;;     "Execute BODY with temporary advice in ADLIST.
