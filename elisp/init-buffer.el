@@ -1,5 +1,39 @@
 ;;; Code:
 
+;; https://protesilaos.com/dotemacs/#h:1081c372-39b8-4c24-b391-2a99285d8acb
+(define-key global-map (kbd "M-=") 'count-words)
+
+(defun my/kill-current-buffer (&optional arg)
+  "Kill current buffer or abort recursion when in minibuffer.
+With ARG prefix also delete the buffer's window."
+  (interactive "P")
+  (if (minibufferp)
+      (abort-recursive-edit)
+    (kill-buffer (current-buffer)))
+  (when (and arg (not (one-window-p)))
+    (delete-window)))
+
+(define-key global-map (kbd "s-k") 'my/kill-current-buffer)
+
+;; Taken from crux package.
+(defun my/rename-file-and-buffer ()
+  "Rename current buffer and, if available, its file."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (if (not (and filename (file-exists-p filename)))
+        (rename-buffer (read-from-minibuffer "New name: " (buffer-name)))
+      (let* ((new-name (read-from-minibuffer "New name: " filename))
+             (containing-dir (file-name-directory new-name)))
+        (make-directory containing-dir t)
+        (cond
+         ((vc-backend filename) (vc-rename-file filename new-name))
+         (t
+          (rename-file filename new-name t)
+          (set-visited-file-name new-name t t)))))))
+
+;; TODO: find better keybinding.
+(define-key global-map (kbd "<C-f2>") 'my/rename-file-and-buffer)
+
 ;; Make buffers with same names unique by showing their paths to distinguish
 ;; them.
 (use-package uniquify
