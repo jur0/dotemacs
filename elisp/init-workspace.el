@@ -1,30 +1,50 @@
 ;;; Code:
 
-;; Manage workspaces by wrapping C-x r w and C-x r j. It takes care of
-;; automatically saving and loading to a separate data structure to allow for
-;; features like persistency in combination with desktop.el.
-;; TODO: check if this package could be replaced by tab-bar (which is built in)
-(use-package eyebrowse
-  :ensure t
-  :demand t
-  :custom
-  ;; Keymap prefix must be set before loading eyebrowse.
-  (eyebrowse-keymap-prefix (kbd "C-c w"))
+;; Tab bar represents a named persistent window configuration.
+(use-package tab-bar
   :config
-  ;; When creating new workspace, do not clone the last one, but create a clean
-  ;; workspace with just *scratch* buffer.
-  (setq eyebrowse-new-workspace t)
-  (setq eyebrowse-close-window-config-prompt t)
-  (eyebrowse-mode t)
+  (setq tab-bar-close-button-show nil)
+  (setq tab-bar-close-last-tab-choice 'tab-bar-mode-disable)
+  (setq tab-bar-close-tab-select 'recent)
+  ;; Start a new tab with the current buffer.
+  (setq tab-bar-new-tab-choice t)
+  (setq tab-bar-new-tab-to 'right)
+  (setq tab-bar-position nil)
+  ;; Keep tab-bar hidden.
+  (setq tab-bar-show nil)
+  (setq tab-bar-tab-hints nil)
+  (setq tab-bar-tab-name-function 'tab-bar-tab-name-all)
+  ;; Enable `tab-bar-mode' by default.
+  (tab-bar-mode t)
+  (global-tab-line-mode -1)
+  ;; Check `winner-mode' that keeps track of layout changes.
+  (tab-bar-history-mode -1)
+
+  (defun my/tab-bar-select-tab-dwim ()
+    "Do-What-I-Mean function for getting to a `tab-bar-mode' tab.
+If no other tab exists, create one and switch to it.  If there is
+one other tab (so two in total) switch to it without further
+questions.  Else use completion to select the tab to switch to."
+    (interactive)
+    (let ((tabs (mapcar (lambda (tab)
+                          (alist-get 'name tab))
+                        (tab-bar--tabs-recent))))
+      (cond ((eq tabs nil)
+             (tab-new))
+            ((eq (length tabs) 1)
+             (tab-next))
+            (t
+             (icomplete-vertical-do ()
+               (tab-bar-switch-to-tab
+                (completing-read "Select tab: " tabs nil t)))))))
+
   :bind
-  (:map eyebrowse-mode-map
-        ("C-c w c" . eyebrowse-create-window-config)
-        ("C-c w q" . eyebrowse-close-window-config)
-        ("C-c w l" . eyebrowse-last-window-config)
-        ("C-c w r" . eyebrowse-rename-window-config)
-        ("C-c w s" . eyebrowse-switch-to-window-config)
-        ("C-c w p" . eyebrowse-prev-window-config)
-        ("C-c w n" . eyebrowse-next-window-config)))
+  (("C-x t t" . my/tab-bar-select-tab-dwim)
+   ("s-t" . my/tab-bar-select-tab-dwim)
+   ;; Add alias for C-tab.
+   ("<s-tab>" . tab-next)
+   ;; Add alias for C-S-tab.
+   ("<C-s-tab>" . tab-previous)))
 
 (provide 'init-workspace)
 
