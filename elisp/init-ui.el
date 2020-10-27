@@ -86,8 +86,7 @@
 
 ;; Frame title.
 (setq frame-title-format
-      `(,(user-login-name) "@" ,(system-name) "   "
-        global-mode-string "  %f"))
+      `(,(user-login-name) "@" ,(system-name) "  ◉  %f"))
 (setq-default icon-title-format frame-title-format)
 
 ;; Keep the `ns-appearance' frame parameter correctly set in GUI frames so that
