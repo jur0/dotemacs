@@ -74,8 +74,7 @@
 
 ;; Keep a record of buffer and window layout changes.
 (use-package winner
-  :commands
-  (winner-undo winner-redo)
+  :demand t
   :config
   (winner-mode t)
   :bind
