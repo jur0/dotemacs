@@ -437,6 +437,20 @@ With \\[universal-argument] toggle the display of the window."
          ("C-b" . company-other-backend)
          ("<tab>" . company-complete-common-or-cycle))))
 
+;; The default display of company completions in pop-up window causes
+;; issue showing line numbers. Displaying the pop-up window in a new
+;; frame fixes it.
+(use-package company-posframe
+  :ensure t
+  :hook
+  (company-mode . company-posframe-mode))
+
+;; Prettify company's frontend by mainly adding icons.
+(use-package company-box
+  :ensure t
+  :commands
+  (company-box-mode))
+
 ;; In buffer completion framework built into Emacs (and company backend
 ;; configured via `company-dabbrev'). It reads all the text before the point and
 ;; tries to find a suitable match (it can be set to search the whole buffer or
