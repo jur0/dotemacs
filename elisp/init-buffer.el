@@ -7,9 +7,7 @@
   "Kill current buffer or abort recursion when in minibuffer.
 With ARG prefix also delete the buffer's window."
   (interactive "P")
-  (if (minibufferp)
-      (abort-recursive-edit)
-    (kill-buffer (current-buffer)))
+  (kill-current-buffer)
   (when (and arg (not (one-window-p)))
     (delete-window)))
 
