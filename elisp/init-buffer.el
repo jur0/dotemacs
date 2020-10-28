@@ -92,10 +92,11 @@ With ARG prefix also delete the buffer's window."
 ;; Make some buffers immortal.
 (defun my/make-immortal-buffers ()
   "Make it impossible to kill scratch and Messages buffers."
-  (when (or (eq (current-buffer) (get-buffer "*scratch*"))
-            (eq (current-buffer) (get-buffer "*Messages*")))
-    ;; Put buffer at the end of the list of all buffers.
-    (bury-buffer) nil))
+  (if (or (eq (current-buffer) (get-buffer "*scratch*"))
+          (eq (current-buffer) (get-buffer "*Messages*")))
+      ;; Put buffer at the end of the list of all buffers.
+      (progn (bury-buffer) nil)
+    t))
 
 (add-hook 'kill-buffer-query-functions 'my/make-immortal-buffers)
 
