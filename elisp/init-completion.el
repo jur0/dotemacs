@@ -448,8 +448,8 @@ With \\[universal-argument] toggle the display of the window."
 ;; Prettify company's frontend by mainly adding icons.
 (use-package company-box
   :ensure t
-  :commands
-  (company-box-mode))
+  :hook
+  (company-mode . company-box-mode))
 
 ;; In buffer completion framework built into Emacs (and company backend
 ;; configured via `company-dabbrev'). It reads all the text before the point and
