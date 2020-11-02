@@ -5,8 +5,10 @@
   :init
   ;; Increase max number of bytes read from subprocess in a single chunk.
   (setq read-process-output-max (* 1024 1024))
-  :config
   (setq lsp-keymap-prefix "C-c p")
+  ;; Syntax checking.
+  (setq lsp-diagnostics-provider :capf)
+  (setq lsp-lens-enable nil)
   (setq lsp-keep-workspace-alive nil)
   (setq lsp-enable-semantic-highlighting t)
   (setq lsp-modeline-diagnostics-enable t)
