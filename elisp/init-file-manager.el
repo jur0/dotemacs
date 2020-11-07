@@ -27,6 +27,19 @@
         ("C-u +" . dired-create-empty-file)
         ("M-s f" . nil)))
 
+;; Reuse the current dired buffer rather than create a new one. It
+;; limits the number of dired buffers as they don't stay open for each
+;; directory.
+(use-package dired-single
+  :ensure t
+  :demand t
+  :after
+  (dired)
+  :bind
+  (:map dired-mode-map
+        ([remap dired-up-directory] . dired-single-up-directory)
+        ([remap dired-find-file] . dired-single-buffer)))
+
 ;; Lookup for file(s) using a regexp and show result in dired buffer.
 ;; M-x find-name-dired
 (use-package find-dired
