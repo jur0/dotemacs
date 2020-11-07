@@ -44,14 +44,13 @@
 
 ;; Environment (PATH and MANPATH) for MacOS and Linux. It's useful when Emacs is
 ;; not started from the console, but rather from GUI i.e. clicking on icon.
-(when (or sys/mac-cocoa-p sys/linux-x-p sys/mac-x-p)
-  (use-package exec-path-from-shell
-    :ensure t
-    :init
-    (setq exec-path-from-shell-check-startup-files nil)
-    (setq exec-path-from-shell-variables '("PATH" "MANPATH"))
-    (setq exec-path-from-shell-arguments '("-l" "-i"))
-    (exec-path-from-shell-initialize)))
+(use-package exec-path-from-shell
+  :if (or sys/mac-cocoa-p sys/linux-x-p sys/mac-x-p)
+  :ensure t
+  :init
+  (setq exec-path-from-shell-variables '("PATH" "MANPATH"))
+  (setq exec-path-from-shell-arguments '("-l" "-i"))
+  (exec-path-from-shell-initialize))
 
 ;; The first running process of Emacs is started as server so Emacs clients can
 ;; connect to it. Calling emacsclient (with or without --create-frame), will
