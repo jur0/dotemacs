@@ -8,13 +8,6 @@
   :init
   (setq epg-pinentry-mode 'loopback))
 
-;; Major mode for pass.
-(use-package pass
-  :if exec/pass
-  :ensure t
-  :commands
-  (pass))
-
 ;; Interface for common actions related to password manipulation.
 (use-package password-store
   :if exec/pass
@@ -25,6 +18,14 @@
    password-store-insert)
   :config
   (setq password-store-time-before-clipboard-restore 30))
+
+;; Major mode for pass, it depends on `password-store'. It shows
+;; password tree which can be manipulated.
+(use-package pass
+  :if exec/pass
+  :ensure t
+  :commands
+  (pass))
 
 (provide 'init-password)
 
