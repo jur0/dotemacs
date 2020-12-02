@@ -91,8 +91,6 @@ afterwards exit the search altogether."
 (use-package rg
   :if exec/rg
   :ensure t
-  :after
-  (wgrep)
   :config
   ;; Group matches in the same file together.
   (setq rg-group-result t)
