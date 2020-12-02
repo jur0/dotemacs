@@ -25,7 +25,7 @@
 (setq-default tab-always-indent 'complete)
 
 ;; Add a newline automatically at the end of the file upon save.
-(setq require-final-newline t)
+(setq require-final-newline 'visit-save)
 
 ;; Delete files by moving them into OS's trash directory.
 (setq delete-by-moving-to-trash t)
