@@ -103,13 +103,15 @@
   ;; Forward slash is treated as a directory.
   (setq wdired-create-parent-directories t))
 
-;; Show path to a file if directories on the path are empty.
+;; Show path to a file if directories on the path are empty. This mode
+;; doesn't work well when moving/deleting files as it only manipulates
+;; the last file on the path and not the whole directory.
 (use-package dired-collapse
   :ensure t
   :after
   (dired)
-  :hook
-  (dired-mode . dired-collapse-mode))
+  :commands
+  (dired-collapse-mode))
 
 ;; Make directories of a dired buffer expandable and form a tree structure.
 (use-package dired-subtree
