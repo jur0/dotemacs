@@ -69,8 +69,8 @@ it can be passed in POS."
 
   :custom
   (org-directory my/org-directory)
-  ;; Hide emphasis marker characters, for example '*' for bold text.
-  (org-hide-emphasis-markers t)
+  ;; Show emphasis marker characters, for example '*' for bold text.
+  (org-hide-emphasis-markers nil)
   (org-special-ctrl-a/e t)
   (org-special-ctrl-k t)
   ;; Follow link when RET is pressed.
