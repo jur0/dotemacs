@@ -87,8 +87,21 @@ it can be passed in POS."
   ;; Fontify code in code blocks.
   (org-src-fontify-natively t)
   (org-src-preserve-indentation t)
-  ;; Treat TAB in a code block according to the major mode of the programming
-  ;; language.
+  (org-structure-template-alist
+   '(("s" . "src")
+     ("el" . "src emacs-lisp")
+     ("sh" . "src shell")
+     ("yaml" . "src yaml")
+     ("toml" . "src toml")
+     ("a" . "export ascii")
+     ("c" . "center")
+     ("C" . "comment")
+     ("e" . "example")
+     ("E" . "export")
+     ("h" . "export html")
+     ("l" . "export latex")
+     ("q" . "quote")
+     ("v" . "verse")))
   (org-src-tab-acts-natively t)
   ;; Do not ask for confirmation to evaluate code block.
   (org-confirm-babel-evaluate nil)
@@ -132,6 +145,10 @@ it can be passed in POS."
   (before-save . my/org-set-last-modified)
   :mode
   ("\\.org\\'" . org-mode))
+
+(use-package org-tempo
+  :after
+  (org))
 
 (use-package org-habit
   :after
