@@ -11,11 +11,6 @@
 (setq adaptive-fill-mode t)
 ;; Visually split long lines.
 (add-hook 'text-mode-hook #'turn-on-visual-line-mode)
-;; Keep paragraphs within `fill-column' length visually.
-(use-package visual-fill-column
-  :ensure t
-  :hook
-  (visual-line-mode . visual-fill-column-mode))
 
 ;; Set default tab width in spaces.
 (setq-default tab-width 4)
