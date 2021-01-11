@@ -102,6 +102,9 @@
   :config
   (setq modus-vivendi-theme-fringes 'subtle)
   (setq modus-vivendi-theme-bold-constructs t)
+  (setq modus-vivendi-theme-org-blocks 'greyscale)
+  ;;(setq modus-vivendi-theme-org-habit 'traffic-light)
+  (setq modus-vivendi-theme-scale-headings t)
   (load-theme 'modus-vivendi t))
 
 (use-package doom-modeline
