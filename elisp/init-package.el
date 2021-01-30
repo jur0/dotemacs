@@ -1,77 +1,34 @@
 ;;; Code:
 
-;; Specify directory for storing packages.
-(setq package-user-dir (expand-file-name "elpa" user-emacs-directory))
-(setq package-archives
-      '(("melpa" . "http://melpa.org/packages/")
-        ;; ("org" . "http://orgmode.org/elpa/")
-        ("gnu" . "http://elpa.gnu.org/packages/")))
+(setq straight-use-package-by-default nil)
 
-(setq-default network-security-level 'high)
-(setq-default tls-checktrust t)
-(setq-default gnutls-verify-error t)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; Initialise the packages, avoiding a re-initialisation.
-(unless (bound-and-true-p package--initialized)
-  ;; Prevent initializing twice.
-  (setq package-enable-at-startup nil)
-  (package-initialize))
+(straight-use-package 'use-package)
 
-;; Use use-package for package management.
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-;; Configure `use-package' prior to loading it.
 (eval-and-compile
+  ;; Needed for straight.el.
   (setq use-package-always-ensure nil)
   (setq use-package-always-defer nil)
   (setq use-package-always-demand nil)
-  ;; More verbose messages from packages, could be set to t after the
-  ;; configuration works.
   (setq use-package-expand-minimally nil)
-  (setq use-package-enable-imenu-support t))
+  (setq use-package-enable-imenu-support t)
+  ;;(setq use-package-hook-name-suffix nil)
+  (setq use-package-compute-statistics nil))
 
-(eval-when-compile
-  (require 'use-package)
-  ;; Required by use-package for :bind.
-  (require 'bind-key))
-
-;; Required by `use-package' for :diminish.
-(use-package diminish
-  :ensure t
-  :after
-  (use-package))
-
-;; This is a tool to compile and install packages locally from local or remote
-;; source code. It's useful for packages not available on MELPA.
-(use-package quelpa
-  :ensure t
-  :custom
-  ;; Do not clone MELPA's git repo, only use quelpa for non-MELPA packages.
-  (quelpa-checkout-melpa-p nil))
-
-;; quelpa handler for use-package.
-(use-package quelpa-use-package
-  :ensure t
-  :after
-  (quelpa))
-
-(use-package auto-package-update
-  :ensure t
-  :custom
-  ;; Update each 7 days.
-  (auto-package-update-interval 7)
-  ;; Ask before updating.
-  (auto-package-update-prompt-before-update t)
-  (auto-package-update-delete-old-versions t)
-  ;; Show results of auto update.
-  (auto-package-update-hide-results t)
-  :config
-  ;; Allow 'M-x upgrade-packages' command.
-  (defalias 'upgrade-packages #'auto-package-update-now)
-  ;; Check whether to update packages at startup.
-  (auto-package-update-maybe))
+  ;; Provides `straight-x-clean-unused-repos' (part of `straight.el')
+  (use-package straight-x)
 
 (provide 'init-package)
 
