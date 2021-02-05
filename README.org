@@ -119,6 +119,8 @@ collection kicks off."
 
 ** Package manager
 
+The default package manager for Emacs is =package.el=. It downloads the packages as tarballs. The =straight.el= replaces the default package manager. The main difference is that the =straight.el= downloads the packages as git repositories, not as tarballs. It is well integrated with =use-package=.
+
 #+begin_src emacs-lisp
 (setq straight-use-package-by-default nil)
 
@@ -612,7 +614,6 @@ The =goto-last-change= package makes it possible to move the cursor back to the 
   :bind
   ("C-z" . goto-last-change))
 #+end_src
-
 
 ** Key bindings help
 
