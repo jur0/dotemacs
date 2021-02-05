@@ -724,3 +724,13 @@ one).  VARIABLE-FONT is proportionally spaced type face."
            (j-set-font-face-attributes (string-to-number height) fixed-font variable-font))))
 #+end_src
 
+* History and backups
+
+* Candidate selection and search methods
+
+* Directory, buffer and window management
+
+* Applications, utilities and major modes
+
+* General interface and interactions
+
