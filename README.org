@@ -1,0 +1,725 @@
+#+title: Emacs Configuration
+#+property: header-args:emacs-lisp :tangle ./init-test.el
+
+* Early initialisation
+
+The =early-init.el= file is supported from version 27.1. It allows to set variables (that have effect on startup speed) early in the initialisation to make Emacs start faster.
+
+The content of =early-init.el= file:
+
+#+begin_src emacs-lisp :tangle ./early-init-test.el
+  (defvar gc-cons-percentage-default gc-cons-percentage
+    "The default value for `gc-cons-percentage'.")
+
+  (defvar file-name-handler-alist-default file-name-handler-alist
+    "The default value for `file-name-handler-alist'.")
+
+  ;; Defer garbage collection further back in the startup process.
+  (setq gc-cons-threshold most-positive-fixnum)
+  (setq gc-cons-percentage 0.5)
+
+  ;; For every .el and .elc file loaded during start up, Emacs runs those
+  ;; regexps against it.
+  (setq file-name-handler-alist nil)
+
+  ;; Do not load site-wide runtime initializations.
+  (setq site-run-file nil)
+
+  ;; Do not initialise the package manager.  This is done later.
+  (setq package-enable-at-startup nil)
+
+  ;; Do not resize the frame at this early stage.
+  (setq frame-inhibit-implied-resize t)
+
+  ;; Faster to disable GUI elements here (before they've been
+  ;; initialized).
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tooltip-mode -1)
+  (setq use-file-dialog nil)
+  (setq use-dialog-box nil)
+
+  (setq inhibit-startup-screen t)
+
+  (provide 'early-init)
+
+  ;;; early-init.el ends here
+#+end_src
+
+* Initialisation
+
+The main configuration file =init.el= starts here.
+
+** Emacs version check
+
+The minimal supported version of Emacs is 27.1.
+
+#+begin_src emacs-lisp
+(when (version< emacs-version "27.1")
+  (error "Emacs 27.1 or newer versions are required!"))
+#+end_src
+
+** Garbage collector tweaks
+
+In order to call garbage collection less frequently the =gc-cons-threshold= is increased from its default value of 800 KB. Check [[https://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/][this link]] to find out more details. Similarly, the value of =gc-cons-threshold-upper-limit= is increased.
+
+#+begin_src emacs-lisp
+(defvar gc-cons-threshold-default
+  (if (display-graphic-p) 16000000 1600000)
+  "The default value for `gc-cons-threshold'.")
+
+(defvar gc-cons-threshold-upper-limit
+  (if (display-graphic-p) 128000000 32000000)
+  "The upper limit value for `gc-cons-threshold' to defer it.")
+
+(defun my/setup-default-startup-values ()
+  "Setup default startup values."
+  (setq gc-cons-threshold gc-cons-threshold-default)
+  (setq gc-cons-percentage gc-cons-percentage-default)
+  (setq file-name-handler-alist file-name-handler-alist-default)
+  ;; Unset the symbols created in early-init.el.
+  (makunbound 'gc-cons-percentage-default)
+  (makunbound 'file-name-handler-alist-default))
+
+(defun my/minibuffer-setup-hook ()
+  "Setup `gc-cons-threshold' to a large number.
+
+When minibuffer is open, garbage collection never occurs so there
+is no freezing."
+  (setq gc-cons-threshold gc-cons-threshold-upper-limit))
+
+(defun my/minibuffer-exit-hook ()
+  "Setup `gc-cons-threshold' to a small number.
+
+When a selection is made or minibuffer is cancelled, garbage
+collection kicks off."
+  (setq gc-cons-threshold gc-cons-threshold-default))
+
+(defun my/garbage-collect-when-minibuffer-exit ()
+  "Setup setup and exit hooks for minibuffer."
+  (add-hook 'minibuffer-setup-hook #'my/minibuffer-setup-hook)
+  (add-hook 'minibuffer-exit-hook #'my/minibuffer-exit-hook))
+
+(defun my/garbage-collect-when-unfocused ()
+  "Setup garbage collection when unfocused."
+  (if (boundp 'after-focus-change-function)
+      (add-function :after after-focus-change-function
+                    (lambda ()
+                      (unless (frame-focus-state)
+                        (garbage-collect))))
+    (add-hook 'after-focus-change-function #'garbage-collect)))
+
+(add-hook 'emacs-startup-hook #'my/setup-default-startup-values)
+(add-hook 'emacs-startup-hook #'my/garbage-collect-when-minibuffer-exit)
+(add-hook 'emacs-startup-hook #'my/garbage-collect-when-unfocused)
+#+end_src
+
+* Package management
+
+** Package manager
+
+#+begin_src emacs-lisp
+(setq straight-use-package-by-default nil)
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+#+end_src
+
+** Load and configure =use-package=
+
+=use-package= is not a package manager (it doesn't list, install or remove packages). Instead, it uses declarative syntax to configure packages.
+
+#+begin_src emacs-lisp
+(straight-use-package 'use-package)
+
+(eval-and-compile
+  ;; Needed for straight.el.
+  (setq use-package-always-ensure nil)
+  (setq use-package-always-defer nil)
+  (setq use-package-always-demand nil)
+  (setq use-package-expand-minimally nil)
+  (setq use-package-enable-imenu-support t)
+  ;;(setq use-package-hook-name-suffix nil)
+  (setq use-package-compute-statistics nil))
+#+end_src
+
+** Emacs related files
+
+*** Configuration and transient files
+
+To keep the home directory clean, the configuration files are placed in =~/.config/emacs= directory. The configuration files include:
+
+- =early-init.el=;
+- =init.el=;
+- =j-lisp= directory with custom libraries (must be added to the =load-path=);
+- =straight= directory with package repositories.
+
+The other Emacs related files such as history, backup files, etc. are in =~/.cache/emacs= directory. The package =no-littering= takes care of organising files in this directory.
+
+#+begin_src emacs-lisp
+(defconst j-emacs-config-directory user-emacs-directory
+  "Directory with Emacs configuration files.")
+
+(defconst j-emacs-config-early-init-el
+  (concat j-emacs-config-directory "early-init-test.el")
+  "The file with early initialisation configuration.")
+
+(defconst j-emacs-config-init-el
+  (concat j-emacs-config-directory "init-test.el")
+  "The main Emacs configuration file.")
+
+(defconst j-emacs-config-source-org
+  (concat j-emacs-config-directory "README.org")
+  "The org file with all the Emacs configuration.")
+
+(defconst j-emacs-cache-directory (expand-file-name "~/.cache/emacs/")
+  "Directory with Emacs transient files.")
+
+(add-to-list 'load-path (concat j-emacs-config-directory "j-lisp"))
+
+(setq user-emacs-directory j-emacs-cache-directory)
+
+(use-package no-littering
+  :straight t)
+#+end_src
+
+*** Customisation settings file
+
+The customisation settings file is placed in =~/.cache/emacs/etc= directory.
+
+#+begin_src emacs-lisp
+(setq custom-file (no-littering-expand-etc-file-name "custom.el"))
+(load custom-file 'noerror)
+#+end_src
+
+* Base settings
+
+** Server mode
+
+ The first running process of Emacs is started as server so Emacs clients can connect to it. Calling =emacsclient= (with or without =--create-frame=), will share the same buffer list and data as the original running process (server). The server persists for as long as there is an Emacs frame attached to it.
+
+ #+begin_src emacs-lisp
+ (use-package server
+  :hook
+  (after-init . server-mode))
+ #+end_src
+
+** Set UTF-8 as default encoding
+
+UTF-8 is the default encoding. Check [[https://www.masteringemacs.org/article/working-coding-systems-unicode-emacs][this article]] to find out how to setup the default and other encodings.
+
+#+begin_src emacs-lisp
+(set-charset-priority 'unicode)
+
+(prefer-coding-system 'utf-8)
+(set-language-environment 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+(set-clipboard-coding-system 'utf-8)
+(set-file-name-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(modify-coding-system-alist 'process "*" 'utf-8)
+#+end_src
+
+** Bidirectional writing and =so-long.el=
+
+In order to improve the performance of Emacs, we can allow support only for languages that are read/written from left to right. This reduces number of line scans (for example, a check for Arabic languages is not done). Learn more in [[https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html][Comprehensive guide on handling long lines in Emacs]].
+
+#+begin_src emacs-lisp
+(setq-default bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa t)
+
+;; Disable slow minor modes when reading very long lines to speed up
+;; Emacs.
+(use-package so-long
+  :config
+  (global-so-long-mode +1))
+#+end_src
+
+** Common functions
+
+The =j-lisp/j-common.el= defines commonly used functions within this configuration.
+
+#+begin_src emacs-lisp :mkdirp yes :tangle ./j-lisp/j-common.el
+;;; j-common.el --- Commonly used functions -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; Commonly used function.
+
+;;; Code:
+
+(defgroup j-common ()
+  "Commonly used functions."
+  :group 'editing)
+
+;;;###autoload
+(defconst j-common-linuxp
+  (eq system-type 'gnu/linux)
+  "Are we running on a GNU/Linux system?")
+
+;;;###autoload
+(defconst j-common-macp
+  (eq system-type 'darwin)
+  "Are we running on a Mac system?")
+
+;;;###autoload
+(defconst j-common-guip
+  (display-graphic-p)
+  "Are we using GUI?")
+
+;;;###autoload
+(defconst j-common-rootp
+  (string-equal "root" (getenv "USER"))
+  "Are you a ROOT user?")
+
+(provide 'j-common)
+;;; j-common.el ends here
+#+end_src
+
+Load =j-common= package.
+
+#+begin_src emacs-lisp
+(use-package j-common
+  :straight (:type built-in)
+  :demand t)
+#+end_src
+
+** Common and helper commands
+
+#+begin_src emacs-lisp :mkdirp yes :tangle ./j-lisp/j-simple.el
+;;; j-simple.el --- Generic commonly used commands -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; Generic commonly used commands.
+
+;;; Code:
+
+(defgroup j-simple ()
+  "Generic commonly used commands."
+  :group 'editing)
+
+;; Commands for lines.
+
+;;;###autoload
+(defun j-simple-new-line-below (&optional arg)
+  "Create an empty line below the current one.
+Move the point to the absolute beginning.  Adapt indentation by
+passing optional prefix ARG (\\[universal-argument]).  Also see
+`j-simple-new-line-above'."
+  (interactive "P")
+  (end-of-line)
+  (if arg
+      (newline-and-indent)
+    (newline)))
+
+;;;###autoload
+(defun j-simple-new-line-above (&optional arg)
+  "Create an empty line above the current one.
+Move the point to the absolute beginning.  Adapt indentation by
+passing optional prefix ARG (\\[universal-argument])."
+  (interactive "P")
+  (let ((indent (or arg nil)))
+    (if (or (bobp)
+            (eq (line-number-at-pos) 1))
+        (progn
+          (beginning-of-line)
+          (newline)
+          (forward-line -1))
+      (forward-line -1)
+      (j-simple-new-line-below indent))))
+
+;;;###autoload
+(defun j-simple-kill-line (&optional arg)
+  "Kill to the end of the line, the whole line on the next call.
+If ARG is specified, do not modify the behaviour of `kill-line'.
+line, kill whole line."
+  (interactive "P")
+  (if arg
+      (kill-line arg)
+    (if (eq (point-at-eol) (point))
+        (kill-line 0)
+      (kill-line))))
+
+;;;###autoload
+(defun j-simple-kill-line-backward ()
+  "Kill from point to the beginning of the line."
+  (interactive)
+  (kill-line 0))
+
+;;;###autoload
+(defun j-simple-yank-replace-line-or-region ()
+  "Replace line or region with latest kill.
+This command can then be followed by the standard
+`yank-pop' (default is bound to \\[yank-pop])."
+  (interactive)
+  (if (use-region-p)
+      (delete-region (region-beginning) (region-end))
+    (delete-region (point-at-bol) (point-at-eol)))
+  (yank))
+
+;; Commands for text insertion or manipulation.
+
+;; TODO
+
+;; Commands for object transposition.
+
+(defmacro j-simple-transpose (name scope &optional doc)
+  "Macro to produce transposition functions.
+NAME is the function's symbol.  SCOPE is the text object to
+operate on.  Optional DOC is the function's docstring.
+
+Transposition over an active region will swap the object at
+mark (region beginning) with the one at point (region end)"
+  `(defun ,name (arg)
+     ,doc
+     (interactive "p")
+     (let ((x (format "%s-%s" "transpose" ,scope)))
+       (if (use-region-p)
+           (funcall (intern x) 0)
+         (funcall (intern x) arg)))))
+
+(j-simple-transpose
+ j-simple-transpose-lines
+ "lines"
+ "Transpose lines or swap over active region.")
+
+(j-simple-transpose
+ j-simple-transpose-paragraphs
+ "paragraphs"
+ "Transpose paragraphs or swap over active region.")
+
+(j-simple-transpose
+ j-simple-transpose-sentences
+ "sentences"
+ "Transpose sentences or swap over active region.")
+
+(j-simple-transpose
+ j-simple-transpose-sexps
+ "sexps"
+ "Transpose balanced expressions or swap over active region.")
+
+;;;###autoload
+(defun j-simple-transpose-chars ()
+  "Always transposes the two characters before point.
+There is no 'dragging' the character forward.  This is the
+behaviour of `transpose-chars' when point is at the end of the
+line."
+  (interactive)
+  (transpose-chars -1)
+  (forward-char))
+
+;;;###autoload
+(defun j-simple-transpose-words (arg)
+  "Transpose ARG words.
+
+If region is active, swap the word at mark (region beginning)
+with the one at point (region end).
+
+Otherwise, and while inside a sentence, this behaves as the
+built-in `transpose-words', dragging forward the word behind the
+point.  The difference lies in its behaviour at the end or
+beginnning of a line, where it will always transpose the word at
+point with the one behind or ahead of it (effectively the
+last/first two words)."
+  (interactive "p")
+  (cond
+   ((use-region-p)
+    (transpose-words 0))
+   ((eq (point) (point-at-eol))
+    (transpose-words -1))
+   ((eq (point) (point-at-bol))
+    (forward-word 1)
+    (transpose-words 1))
+   (t
+    (transpose-words arg))))
+
+;; Commands for marking syntactic constructs
+
+
+;; Commands for building and loading Emacs config.
+
+;;;###autoload
+(defun j-simple-build-emacs-config ()
+  "Generate Emacs configuration files from Org file."
+  (interactive)
+  (org-babel-tangle-file j-emacs-config-source-org))
+
+(provide 'j-simple)
+;;; j-simple.el ends here
+#+end_src
+
+Load =j-simple= package.
+
+#+begin_src emacs-lisp
+(use-package j-simple
+  :straight (:type built-in)
+  :demand t)
+#+end_src
+
+** Global keybindings
+
+*** Modifier keys: Super and Meta
+
+Set super and meta keys for different operating systems.
+
+#+begin_src emacs-lisp
+(cond (j-common-macp
+       (setq mac-option-modifier 'super)
+       (setq mac-command-modifier 'meta))
+      (t nil))
+#+end_src
+
+*** General key bindings
+
+Disable unused global key bindings.
+
+#+begin_src emacs-lisp
+(let ((map global-map))
+  ;; Disable `suspend-emacs'.
+  (define-key map (kbd "C-x C-z") nil)
+  ;; Disable `view-hello-file'.
+  (define-key map (kbd "C-h h") nil)
+  ;; Disable `tmm-menubar'.
+  (define-key map (kbd "M-`") nil))
+#+end_src
+
+Redefine or enhance global key bindings.
+
+#+begin_src emacs-lisp
+(let ((map global-map))
+  ;; Commands for help.
+  (define-key map (kbd "C-h K") #'describe-keymap)
+  ;; Commands for lines.
+  (define-key map (kbd "<C-return>") #'j-simple-new-line-below)
+  (define-key map (kbd "<C-S-return>") #'j-simple-new-line-above)
+  (define-key map (kbd "C-k") #'j-simple-kill-line)
+  (define-key map (kbd "M-k") #'j-simple-kill-line-backward)
+  (define-key map (kbd "C-S-y") #'j-simple-yank-replace-line-or-region)
+  ;; TODO: line joins
+  ;; Commands for object transposition.
+  (define-key map (kbd "C-t") #'j-simple-transpose-chars)
+  (define-key map (kbd "C-x C-t") #'j-simple-transpose-lines)
+  (define-key map (kbd "C-S-t") #'j-simple-transpose-paragraphs)
+  (define-key map (kbd "C-x M-t") #'j-simple-transpose-sentences)
+  (define-key map (kbd "C-M-t") #'j-simple-transpose-sexps)
+  (define-key map (kbd "M-t") #'j-simple-transpose-words))
+#+end_src
+
+The =whole-line-or-region= package changes behaviour of killing, yanking and commenting of lines and regions:
+- if no region is activated, the current line is copied/yanked/commented;
+- if a region is activated, the whole region is copied/yanked/commented;
+- with numeric prefix, it possible to operate on multiple lines starting with the current line.
+
+#+begin_src emacs-lisp
+(use-package whole-line-or-region
+  :straight t
+  :config
+  (whole-line-or-region-global-mode +1))
+#+end_src
+
+The =expand-region= package replaces:
+- =mark-word= which doesn't mark the whole word if the cursor is in the middle, only marks the part of the word from the cursor to the end of the word. =er/mark-word= works better as it marks the whole word regardless of where the cursor is placed;
+- =mark-sexp= is replaced with =er/expand-region= which with every call marks more context (sexp).
+
+#+begin_src emacs-lisp
+(use-package expand-region
+  :straight t
+  :bind
+  (;; C-@
+   ([remap mark-word] . er/mark-word)
+   ;; C-M-@ or C-M-SPC
+   ([remap mark-sexp] . er/expand-region)))
+#+end_src
+
+The behaviour of =C-a= and =C-e= is changed to move the cursor to the first/last actionable character of the line.
+
+#+begin_src emacs-lisp
+(use-package mwim
+  :straight t
+  :bind
+  (;; C-a
+   ([remap move-beginning-of-line] . mwim-beginning-of-code-or-line)
+   ;; C-e
+   ([remap move-end-of-line] . mwim-end-of-code-or-line)))
+#+end_src
+
+The behaviour of =M-<= and =M->= is changed to move to the first/last actionable point in a buffer (DWIM style).
+
+#+begin_src emacs-lisp
+(use-package beginend
+  :straight t
+  :config
+  (beginend-global-mode +1))
+#+end_src
+
+The =subword= package changes the way how word boundaries are treated in programming modes. For example, "CamelCase" are two words as well as "foo_bar".
+
+#+begin_src emacs-lisp
+(use-package subword
+  :hook (prog-mode . subword-mode))
+#+end_src
+
+The =hungry-delete= packages deletes multiple white chars at once, until there is a non-white char.
+
+#+begin_src emacs-lisp
+(use-package hungry-delete
+  :straight t
+  :config
+  (setq-default hungry-delete-chars-to-skip " \t\f\v")
+  (global-hungry-delete-mode +1))
+#+end_src
+
+If there is some text selected and we start typing, the selected text is deleted and replaced with the newly typed text.
+
+#+begin_src emacs-lisp
+(use-package delsel
+  :config
+  (delete-selection-mode +1))
+#+end_src
+
+The =helpful= package is an alternative to the built-in Emacs help. It provides more contextual information. Note that =helpful-callable= includes both functions and macros.
+
+#+begin_src emacs-lisp
+(use-package helpful
+  :straight t
+  :bind
+  (("s-h" . helpful-at-point)
+   ("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)))
+#+end_src
+
+The =goto-last-change= package makes it possible to move the cursor back to the last change.
+
+#+begin_src emacs-lisp
+(use-package goto-last-change
+  :straight t
+  :bind
+  ("C-z" . goto-last-change))
+#+end_src
+
+
+** Key bindings help
+
+The =which-key= is a minor mode that displays the key bindings following currently entered incomplete command (a prefix).
+
+#+begin_src emacs-lisp
+(use-package which-key
+  :straight t
+  :config
+  (setq which-key-popup-type 'minibuffer)
+  (which-key-mode +1))
+#+end_src
+
+** Theme
+
+#+begin_src emacs-lisp
+(use-package modus-themes
+  :straight t
+  :config
+  (setq modus-themes-theme-fringes 'subtle)
+  (setq modus-themes-theme-bold-constructs t)
+  (setq modus-themes-theme-org-blocks 'greyscale)
+  (setq modus-themes-theme-org-habit 'traffic-light)
+  (setq modus-themes-theme-scale-headings t)
+  (load-theme 'modus-vivendi t)
+  :bind
+  ("C-c t" . modus-themes-toggle))
+#+end_src
+
+** Font
+
+#+begin_src emacs-lisp
+(defconst j-font-sizes-families-alist
+  '(("phone" . (110 "Hack" "Source Serif Variable"))
+    ("laptop" . (120 "Hack" "Source Serif Variable"))
+    ("desktop" . (130 "Hack" "Source Serif Variable"))
+    ("presentation" . (180 "Iosevka Nerd Font Mono" "Source Serif Pro")))
+  "Alist of desired typefaces and their point sizes.
+
+Each association consists of a display type mapped to a point
+size, followed by monospaced and proportionately spaced font
+names.  The monospaced typeface is meant to be applied to the
+`default' and `fixed-pitch' faces.  The proportionately spaced
+font is intended for the `variable-pitch' face.")
+
+(defun j-set-font-face-attributes (height fixed-font variable-font)
+  "Set font face attributes.
+
+HEIGHT is the font's point size, represented as either '10' or
+'10.5'.  FIXED-FONT is a fixed pitch typeface (also the default
+one).  VARIABLE-FONT is proportionally spaced type face."
+  (set-face-attribute 'default nil :family fixed-font :height height)
+  (set-face-attribute 'fixed-pitch nil :family fixed-font)
+  (set-face-attribute 'variable-pitch nil :family variable-font))
+
+(defun j-set-font-for-display (display)
+  "Set defaults based on DISPLAY."
+  (let* ((font-data (assoc display j-font-sizes-families-alist))
+         (height (nth 1 font-data))
+         (fixed-font (nth 2 font-data))
+         (variable-font (nth 3 font-data)))
+    (j-set-font-face-attributes height fixed-font variable-font)))
+
+;; TODO: determine pixel width for phone.
+(defun j-get-display ()
+  "Get display size."
+  (if (<= (display-pixel-width) 1280)
+	  "laptop"
+    "desktop"))
+
+(defun j-set-font-init ()
+  "Set font for the current display."
+  (if j-common-guip
+      (j-set-font-for-display (j-get-display))
+    (user-error "Not running a graphical Emacs, cannot set font")))
+
+(add-hook 'after-init-hook #'j-set-font-init)
+
+(defun j-font-mono-p (font)
+  "Check if FONT is monospaced."
+  (when-let ((info (font-info font)))
+    ;; If the string is found the match function returns an integer.
+    (integerp (string-match-p "spacing=100" (aref info 1)))))
+
+;; Set fixed-pitch and variable-pitch fonts and font height
+;; interactively. Mainly for testing purposes to check different font families.
+(defun j-set-font ()
+  "Set font."
+  (interactive)
+  (when sys/guip
+    (let* ((font-groups (seq-group-by #'j-font-mono-p (font-family-list)))
+           fixed-fonts
+           variable-fonts
+           all-fonts
+           fixed-font
+           variable-font
+           (heights (mapcar #'number-to-string (list 110 115 120 125 130 135 140)))
+           height)
+           (if (caar font-groups)
+               (setq fixed-fonts (cdar font-groups)
+                     variable-fonts (cdadr font-groups))
+             (setq fixed-fonts (cdadr font-groups)
+                   variable-fonts (cdar font-groups)))
+           (setq all-fonts (append variable-fonts fixed-fonts))
+           (setq fixed-font (completing-read "Select fixed pitch font: " fixed-fonts nil t))
+           (setq variable-font (completing-read "Select variable pitch font: " all-fonts nil t))
+           (setq height (completing-read "Select or insert font height: " heights nil))
+           (j-set-font-face-attributes (string-to-number height) fixed-font variable-font))))
+#+end_src
+
