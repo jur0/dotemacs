@@ -726,6 +726,112 @@ one).  VARIABLE-FONT is proportionally spaced type face."
 
 * History and backups
 
+This section contains configuration of packages that are used for making file backups, keeping history of cursor position, file changes, etc.
+
+These packages produce files where the history and backups are kept. The location of these files is not configured in this section, the package =no-littering= has sane defaults which are not overwritten here.
+
+** Desktop
+
+The built-in =desktop= package saves the state of the desktop when Emacs is closed or crashes. The desktop state is read on the next Emacs startup and restores:
+- buffers (=desktop-restore-eager= restores just a couple of buffers, the rest is restored lazily);
+- frame configuration including windows (with their position) and workspaces. The alternative to storing the frame configuration is using registers with =C-x r f= and reading the it back using =C-x r j=.
+
+#+begin_src emacs-lisp
+(use-package desktop
+  :config
+  (setq desktop-base-file-name "desktop")
+  (setq desktop-base-lock-name "desktop.lock")
+  (setq desktop-auto-save-timeout 60)
+  (setq desktop-restore-eager 5)
+  (setq desktop-restore-frames t)
+  (setq desktop-files-not-to-save nil)
+  (setq desktop-globals-to-clear nil)
+  (setq desktop-load-locked-desktop t)
+  (setq desktop-missing-file-warning t)
+  (setq desktop-save 'ask-if-new)
+  (desktop-save-mode +1))
+#+end_src
+
+** Minibuffer history
+
+Remember actions related to the minibuffer, such as input and choices. The history is read by the completion frameworks.
+
+#+begin_src emacs-lisp
+(use-package savehist
+  :config
+  (setq history-length 10000)
+  (setq history-delete-duplicates t)
+  (setq savehist-autosave-interval 60)
+  (setq savehist-additional-variables '(search-ring regexp-search-ring))
+  (setq savehist-save-minibuffer-history t)
+  (savehist-mode +1))
+#+end_src
+
+** Cursor position history
+
+Remember where the cursor position is in any file.
+
+#+begin_src emacs-lisp
+(use-package saveplace
+  :config
+  (setq save-place-forget-unreadable-files t)
+  (save-place-mode +1))
+#+end_src
+
+** File backup
+
+Keep backups of visited files. The explanation of some of the settings:
+- =make-backup-files= - make a backup of a file when it's saved the first time;
+- =vc-make-backup-files= - backup also versioned files (git, svn, etc.);
+- =backup-by-copying= - don't clobber symlinks;
+- =version-control= - version numbers for backup files;
+- =delete-old-versions= - delete excess backup files without asking.
+
+#+begin_src emacs-lisp
+(setq make-backup-files t)
+(setq vc-make-backup-files t)
+(setq backup-by-copying t)
+(setq version-control t)
+(setq delete-old-versions t)
+(setq kept-old-versions 6)
+(setq kept-new-versions 9)
+#+end_src
+
+=auto-save= files use hashmarks (=#=) and shall be written locally within the project directory (along with the actual files). The reason is that auto-save files are just temporary files that Emacs creates until a file is saved again. =auto-save= files are created whenever Emacs crashes.
+
+We disable the =auto-save= mode and use =super-save= package instead - it auto-saves buffers, when certain events happen - e.g. switch between buffers, an Emacs frame loses focus, etc. It's both something that augments and replaces the standard =auto-save-mode=.
+
+#+begin_src emacs-lisp
+(setq auto-save-default nil)
+
+(use-package super-save
+  :straight t
+  :config
+  (setq super-save-auto-save-when-idle t)
+  (setq super-save-idle-duration 15)
+  (setq super-save-remote-files nil)
+  (super-save-mode +1))
+#+end_src
+
+** Undo and redo
+
+The changes of buffer are also saved to a file, so this works between Emacs restarts as well.
+
+#+begin_src emacs-lisp
+(use-package undo-tree
+  :straight t
+  :init
+  (setq undo-tree-visualizer-timestamps t)
+  (setq undo-tree-visualizer-diff t)
+  (setq undo-tree-auto-save-history t)
+  :config
+  (global-undo-tree-mode +1))
+#+end_src
+
+** Recently visited files
+
+TODO
+
 * Candidate selection and search methods
 
 * Directory, buffer and window management
