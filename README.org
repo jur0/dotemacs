@@ -838,5 +838,31 @@ TODO
 
 * Applications, utilities and major modes
 
+** Org mode
+
+#+begin_src emacs-lisp
+(defconst j-org-directory "~/org"
+  "Directory with org-mode files.")
+
+(use-package org
+  :straight (:type built-in)
+  :config
+  (setq org-directory j-org-directory)
+  (setq org-imenu-depth 6)
+  ;; General settings.
+  (setq org-adapt-indentation nil)
+  (setq org-special-ctrl-a/e nil)
+  (setq org-special-ctrl-k nil)
+  (setq org-M-RET-may-split-line '((default . nil)))
+  (setq org-hide-emphasis-markers nil)
+  (setq org-hide-macro-markers nil)
+  (setq org-hide-leading-stars nil)
+  (setq org-catch-invisible-edits 'show)
+  (setq org-return-follows-link nil)
+  (setq org-loop-over-headlines-in-active-region 'start-level)
+  (setq org-cycle-separator-lines -1)
+  (setq org-modules '(ol-info org-tempo org-habit)))
+#+end_src
+
 * General interface and interactions
 
