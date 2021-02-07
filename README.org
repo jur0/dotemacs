@@ -855,6 +855,22 @@ TODO
 (defconst j-org-directory "~/org"
   "Directory with org-mode files.")
 
+(defconst j-org-inbox-file
+  (expand-file-name "inbox.org" j-org-directory)
+  "File with captured and unprocessed TODO items.")
+
+(defconst j-org-projects-file
+  (expand-file-name "projects.org" j-org-directory)
+  "File with project TODO items.")
+
+(defconst j-org-actions-file
+  (expand-file-name "actions.org" j-org-directory)
+  "File with processed TODO items from inbox file.")
+
+(defconst j-org-repeaters-file
+  (expand-file-name "repeaters.org" j-org-directory)
+  "File with TODO items that repeat (habits).")
+
 (use-package org
   :straight (:type built-in)
   :config
