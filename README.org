@@ -629,16 +629,27 @@ The =which-key= is a minor mode that displays the key bindings following current
 
 ** Theme
 
+The themes have [[https://protesilaos.com/modus-themes/][documentation]].
+
 #+begin_src emacs-lisp
 (use-package modus-themes
   :straight t
+  :init
+  (setq modus-themes-bold-constructs t)
+  (setq modus-themes-slanted-constructs t)
+  (setq modus-themes-syntax 'green-strings)
+  (setq modus-themes-prompts 'subtle-accented)
+  (setq modus-themes-mode-line 'borderless-moody)
+  (setq modus-themes-fringes 'subtle)
+  (setq modus-themes-lang-checkers 'subtle-foreground-straight-underline)
+  (setq modus-themes-intense-hl-line t)
+  (setq modus-themes-paren-match 'intense-bold)
+  (setq modus-themes-org-blocks 'greyscale)
+  (setq modus-themes-org-habit 'traffic-light)
+  (setq modus-themes-scale-headings t)
+  (modus-themes-load-themes)
   :config
-  (setq modus-themes-theme-fringes 'subtle)
-  (setq modus-themes-theme-bold-constructs t)
-  (setq modus-themes-theme-org-blocks 'greyscale)
-  (setq modus-themes-theme-org-habit 'traffic-light)
-  (setq modus-themes-theme-scale-headings t)
-  (load-theme 'modus-vivendi t)
+  (modus-themes-load-vivendi)
   :bind
   ("C-c t" . modus-themes-toggle))
 #+end_src
