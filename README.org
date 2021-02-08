@@ -888,7 +888,170 @@ TODO
   (setq org-return-follows-link nil)
   (setq org-loop-over-headlines-in-active-region 'start-level)
   (setq org-cycle-separator-lines -1)
-  (setq org-modules '(ol-info org-tempo org-habit)))
+  (setq org-modules '(ol-info org-tempo org-habit))
+  ;; Code blocks.
+  (setq org-structure-template-alist
+   '(("s" . "src")
+     ("el" . "src emacs-lisp")
+     ("sh" . "src shell")
+     ("yaml" . "src yaml")
+     ("toml" . "src toml")
+     ("c" . "center")
+     ("C" . "comment")
+     ("e" . "example")
+     ("q" . "quote")
+     ("v" . "verse")))
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-src-window-setup 'current-window)
+  (setq org-edit-src-persistent-message nil)
+  (setq org-src-fontify-natively t)
+  (setq org-src-preserve-indentation t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-edit-src-content-indentation 0)
+  ;; Links.
+  (setq org-link-keep-stored-after-insertion t)
+  ;; Todo, tags.
+  (setq org-todo-keywords
+   '(;; TODO an item that needs addressing;
+     ;; STARTED being addressed;
+     ;; WAITING  dependent on something else happening;
+     ;; DELEGATED someone else is doing it and I need to follow up with them;
+     ;; ASSIGNED someone else has full, autonomous responsibility for it;
+     ;; CANCELLED no longer necessary to finish;
+     ;; DONE complete.
+     (sequence "TODO(t)" "STARTED(s!)" "WAITING(w@/!)" "DELEGATED(e@/!)" "|"
+               "ASSIGNED(a@/!)" "CANCELLED(c@/!)" "DONE(d!)")))
+  (setq org-tag-alist
+   '(;; ERRAND requires a short trip (deliver package, buy something);
+     ;; CALL requires calling via phone, internet, etc.;
+     ;; REPLY requires replying to an email;
+     ;; VISIT requires a longer trip. ;; TODO
+     (:startgroup . nil)
+     ("ERRAND" . ?e) ("CALL" . ?c) ("REPLY" . ?r) ("VISIT" . ?v)
+     (:endgroup . nil)))
+  (setq org-highest-priority ?A)
+  (setq org-lowest-priority ?C)
+  (setq org-default-priority ?B)
+  (setq org-fontify-done-headline nil)
+  (setq org-fontify-quote-and-verse-blocks t)
+  (setq org-fontify-whole-heading-line nil)
+  (setq org-fontify-whole-block-delimiter-line nil)
+  (setq org-enforce-todo-dependencies t)
+  (setq org-enforce-todo-checkbox-dependencies t)
+  (setq org-track-ordered-property-with-tag t)
+  ;; Logs.
+  (setq org-log-into-drawer t)
+  (setq org-log-done 'time)
+  (setq org-log-redeadline t)
+  (setq org-log-reschedule t)
+  (setq org-treat-insert-todo-heading-as-state-change nil)
+  (setq org-read-date-prefer-future 'time)
+  ;; Capture
+  (setq org-default-notes-file j-org-inbox-file)
+  (setq org-capture-templates
+	`(("t" "TODO task" entry
+	   (file my/org-inbox-file)
+	   ,(concat "* TODO %?\n"
+		    ":PROPERTIES:\n"
+		    ":CREATED:  %U\n"
+		    ":END:\n"))))
+  ;; Agenda.
+  (setq org-agenda-files
+	(list j-org-inbox-file
+              j-org-projects-file
+              j-org-actions-file
+              j-org-repeaters-file))
+  (setq org-agenda-span 14)
+  (setq org-agenda-start-on-weekday 1)
+  (setq org-agenda-confirm-kill t)
+  (setq org-agenda-show-all-dates t)
+  (setq org-agenda-show-outline-path nil)
+  (setq org-agenda-window-setup 'current-window)
+  (setq org-agenda-restore-windows-after-quit t)
+  (setq org-agenda-skip-comment-trees t)
+  (setq org-agenda-menu-show-matcher t)
+  (setq org-agenda-menu-two-columns nil)
+  (setq org-agenda-sticky nil)
+  (setq org-agenda-custom-commands-contexts nil)
+  (setq org-agenda-max-entries nil)
+  (setq org-agenda-max-todos nil)
+  (setq org-agenda-max-tags nil)
+  (setq org-agenda-max-effort nil)
+  (setq org-agenda-block-separator ?—)
+  (setq org-agenda-follow-indirect t)
+  (setq org-agenda-include-deadlines t)
+  (setq org-deadline-warning-days 14)
+  (setq org-agenda-skip-scheduled-if-done nil)
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+  (setq org-agenda-skip-timestamp-if-deadline-is-shown t)
+  (setq org-agenda-skip-deadline-if-done nil)
+  (setq org-agenda-skip-deadline-prewarning-if-scheduled 1)
+  (setq org-agenda-skip-scheduled-delay-if-deadline nil)
+  (setq org-agenda-skip-additional-timestamps-same-entry nil)
+  (setq org-agenda-skip-timestamp-if-done nil)
+  (setq org-agenda-search-headline-for-time t)
+  (setq org-scheduled-past-days 365)
+  (setq org-deadline-past-days 365)
+  (setq org-agenda-time-leading-zero t)
+  (setq org-agenda-current-time-string
+        "Now -·-·-·-·-·-·-")
+  (setq org-agenda-time-grid
+        '((daily today require-timed)
+          (0600 0700 0800 0900 1000 1100
+                1200 1300 1400 1500 1600
+                1700 1800 1900 2000 2100)
+          " ....." "-----------------"))
+  (setq org-agenda-custom-commands
+   `(("d" "Daily schedule"
+      ((agenda ""
+               ((org-agenda-span 'day)
+                (org-deadline-warning-days 14)))
+       (todo "TODO"
+             ((org-agenda-overriding-header
+               "--- To refile -------------------------------")
+              (org-agenda-files (list j-org-inbox-file))))
+       (todo "TODO"
+             ((org-agenda-overriding-header
+               "--- Projects --------------------------------")
+              (org-agenda-files (list j-org-projects-file))))
+       (todo "TODO"
+             ((org-agenda-overriding-header
+               "--- Actions ---------------------------------")
+              (org-agenda-files (list j-org-actions-file))
+              (org-agenda-skip-function
+               '(org-agenda-skip-entry-if 'deadline 'scheduled)))))
+      ((org-agenda-compact-blocks t)
+       (org-use-property-inheritance t)))))
+  (setq org-refile-targets
+	'((my/org-projects-file :maxlevel . 1)
+	  (my/org-actions-file :level . 0)
+	  (my/org-repeaters-file :level . 0)))
+  ;; Refile.
+  (setq org-refile-use-outline-path 'file)
+  (setq org-outline-path-complete-in-steps nil)
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
+  (setq org-refile-use-cache t)
+  ;; Habit.
+  (setq org-habit-preceding-days 10)
+  (setq org-habit-following-days 5)
+  (setq org-habit-graph-column 65)
+  (setq org-habit-show-habits-only-for-today nil)
+
+  :bind
+  (("C-c a" . org-agenda)
+   ("C-c c" . org-capture)
+   ("C-c l" . org-store-link)
+   (:map org-mode-map
+         ("M-n" . outline-next-visible-heading)
+         ("M-p" . outline-previous-visible-heading)
+	 ("C-'" . nil)
+	 ("C-," . nil)
+	 ("<C-return>" . nil)
+	 ("<C-S-return>" . nil)
+         ("<C-M-return>" . org-insert-subheading))))
+;   (:map org-agenda-mode-map
+;	 ("n" . org-agenda-next-item)
+;         ("p" . org-agenda-previous-item))))
 #+end_src
 
 * General interface and interactions
