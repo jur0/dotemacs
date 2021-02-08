@@ -639,7 +639,7 @@ The themes have [[https://protesilaos.com/modus-themes/][documentation]].
   (setq modus-themes-slanted-constructs t)
   (setq modus-themes-syntax 'green-strings)
   (setq modus-themes-prompts 'subtle-accented)
-  (setq modus-themes-mode-line 'borderless-moody)
+  (setq modus-themes-mode-line nil)
   (setq modus-themes-fringes 'subtle)
   (setq modus-themes-lang-checkers 'subtle-foreground-straight-underline)
   (setq modus-themes-intense-hl-line t)
