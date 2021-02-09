@@ -950,7 +950,7 @@ TODO
   (setq org-default-notes-file j-org-inbox-file)
   (setq org-capture-templates
 	`(("t" "TODO task" entry
-	   (file my/org-inbox-file)
+	   (file j-org-inbox-file)
 	   ,(concat "* TODO %?\n"
 		    ":PROPERTIES:\n"
 		    ":CREATED:  %U\n"
@@ -1023,9 +1023,9 @@ TODO
       ((org-agenda-compact-blocks t)
        (org-use-property-inheritance t)))))
   (setq org-refile-targets
-	'((my/org-projects-file :maxlevel . 1)
-	  (my/org-actions-file :level . 0)
-	  (my/org-repeaters-file :level . 0)))
+	'((j-org-projects-file :maxlevel . 1)
+	  (j-org-actions-file :level . 0)
+	  (j-org-repeaters-file :level . 0)))
   ;; Refile.
   (setq org-refile-use-outline-path 'file)
   (setq org-outline-path-complete-in-steps nil)
