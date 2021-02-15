@@ -845,6 +845,73 @@ TODO
 
 * Candidate selection and search methods
 
+** Completion framework
+
+A completion style is a back-end for completion. Probably the most powerful completion style, that combines multiple different styles, is *orderless*. The [[https://github.com/oantolin/orderless][orderless project page]] has extensive documentation.
+
+In orderless completion style, a search pattern is split into components (check =orderless-component-separator=). Each of these components can be matched using a different matching style. It's possible to force a particular matching style for a given component (check =orderless-style-dispatchers=) to have more fine-grained control.
+
+#+begin_src emacs-lisp
+;;; j-orderless.el --- Extensions for orderless -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; Extensions for orderless.
+
+;;; Code:
+
+(defgroup j-orderless ()
+  "Extensions for orderless."
+  :group 'minibuffer)
+
+(defcustom j-orderless-default-styles
+  '(orderless-flex
+    orderless-strict-leading-initialism
+    orderless-regexp
+    orderless-prefixes
+    orderless-literal)
+  "List that should be assigned to `orderless-matching-styles'."
+  :type 'list
+  :group 'j-orderless)
+
+(defun j-orderless-literal-dispatcher (pattern _index _total)
+  "Literal style dispatcher using the equals sign as a suffix."
+  (when (string-suffix-p "=" pattern)
+    `(orderless-literal . ,(substring pattern 0 -1))))
+
+(defun j-orderless-initialism-dispatcher (pattern _index _total)
+  "Leading initialism dispatcher using the comma as a suffix."
+  (when (string-suffix-p "," pattern)
+    `(orderless-strict-leading-initialism . ,(substring pattern 0 -1))))
+
+(provide 'j-orderless)
+;;; j-orderless.el ends here
+#+end_src
+
+Load =j-orderless= package.
+
+#+begin_src emacs-lisp
+(use-package j-orderless
+  :straight (:type built-in)
+  :demand t)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package orderless
+  :straight t
+  :after j-orderless
+  :config
+  (setq orderless-component-separator " +")
+  (setq orderless-matching-styles j-orderless-default-styles)
+  (setq orderless-style-dispatchers
+        '(j-orderless-literal-dispatcher
+          j-orderless-initialism-dispatcher))
+  :bind
+  (:map minibuffer-local-completion-map
+	("SPC" . nil)
+	("?" . nil)))
+#+end_src
+
 * Directory, buffer and window management
 
 * Applications, utilities and major modes
