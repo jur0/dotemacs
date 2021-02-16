@@ -912,6 +912,100 @@ Load =j-orderless= package.
 	("?" . nil)))
 #+end_src
 
+** Minibuffer
+
+The minibuffer is where commands read input such as file names, search strings, buffer names, etc. When the input string is being typed in the minibuffer Emacs can fill in the rest, or some of it. When the completion is available, some keys can be bound to commands that try to complete the mininbuffer input.
+
+The list of possible candidates (candidate alternatives) is shown in a separate buffer called =*Completions*= (normally by pressing TAB key) if there are more than =completion-cycle-threshold= candidates. There are two completion styles used in the minibuffer:
+- =orderless= which is described in the previous section;
+- =partial-completion= which is built-in and provides completions for file system paths e.g. by typing =~/.l/s/fo= we get =~/.local/share/fonts=.
+
+The minibuffer history is saved using the built-in mechanism (see section TODO).
+
+#+begin_src emacs-lisp :mkdirp yes :tangle ./j-lisp/j-minibuffer.el
+;;; j-minibuffer.el --- Extensions for minibuffer -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; Extensions for minibuffer.
+
+;;; Code:
+
+(defgroup j-minibuffer ()
+  "Extensions for minibuffer."
+  :group 'minibuffer)
+
+(defun j-minibuffer--get-completions ()
+  "Find completions buffer."
+  (get-buffer-window "*Completions*"))
+
+;;;###autoload
+(defun j-minibuffer-focus-minibuffer ()
+  "Focus the active minibuffer."
+  (interactive)
+  (let ((mini (active-minibuffer-window)))
+    (when mini
+      (select-window mini))))
+
+;;;###autoload
+(defun j-minibuffer-focus-minibuffer-or-completions ()
+  "Focus the active minibuffer or completions buffer."
+  (interactive)
+  (let* ((minibuffer (active-minibuffer-window))
+         (completions (j-minibuffer--get-completions)))
+    (cond ((and minibuffer (not (minibufferp)))
+           (select-window minibuffer nil))
+          ((and completions (not (eq (selected-window) completions)))
+           (select-window completions nil)))))
+
+(provide 'j-minibuffer)
+;;; j-minibuffer.el ends here
+#+end_src
+
+Load =j-minibuffer= package.
+
+#+begin_src emacs-lisp
+(use-package j-minibuffer
+  :straight (:type built-in)
+  :demand t)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package minibuffer
+  :after j-minibuffer
+  :config
+  (setq completion-styles '(orderless partial-completion))
+  (setq completion-category-defaults nil)
+  (setq completion-cycle-threshold 3)
+  (setq completion-flex-nospace nil)
+  (setq completion-pcm-complete-word-inserts-delimiters t)
+  (setq completion-pcm-word-delimiters "-_./:| ")
+  (setq completion-show-help nil)
+  (setq completion-auto-help t)
+  (setq completion-ignore-case t)
+  (setq-default case-fold-search t)
+  (setq read-buffer-completion-ignore-case t)
+  (setq read-file-name-completion-ignore-case t)
+  (setq completions-format 'vertical)
+  (setq enable-recursive-minibuffers t)
+  (setq read-answer-short t)
+  (setq resize-mini-windows t)
+  (setq minibuffer-eldef-shorten-default t)
+  (file-name-shadow-mode +1)
+  (minibuffer-depth-indicate-mode +1)
+  (minibuffer-electric-default-mode +1)
+  :bind
+  (("s-f" . find-file)
+   ("s-F" . find-file-other-window)
+   ("s-b" . switch-to-buffer)
+   ("s-B" . switch-to-buffer-other-window)
+   ("s-d" . dired)
+   ("s-D" . dired-other-window)
+   ("s-v" . j-minibuffer-focus-minibuffer-or-completions)
+   (:map minibuffer-local-completion-map
+         ("C-j" . exit-minibuffer))))
+#+end_src
+
 * Directory, buffer and window management
 
 * Applications, utilities and major modes
