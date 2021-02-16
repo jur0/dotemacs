@@ -851,7 +851,7 @@ A completion style is a back-end for completion. Probably the most powerful comp
 
 In orderless completion style, a search pattern is split into components (check =orderless-component-separator=). Each of these components can be matched using a different matching style. It's possible to force a particular matching style for a given component (check =orderless-style-dispatchers=) to have more fine-grained control.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :mkdirp yes :tangle ./j-lisp/j-orderless.el
 ;;; j-orderless.el --- Extensions for orderless -*- lexical-binding: t -*-
 
 ;;; Commentary:
