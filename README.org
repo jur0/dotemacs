@@ -623,7 +623,17 @@ The =which-key= is a minor mode that displays the key bindings following current
 (use-package which-key
   :straight t
   :config
-  (setq which-key-popup-type 'minibuffer)
+  (setq which-key-dont-use-unicode t)
+  (setq which-key-add-column-padding 2)
+  (setq which-key-show-early-on-C-h nil)
+  (setq which-key-idle-delay 0.8)
+  (setq which-key-idle-secondary-delay 0.05)
+  (setq which-key-popup-type 'side-window)
+  (setq which-key-show-prefix 'echo)
+  (setq which-key-max-display-columns 3)
+  (setq which-key-separator "  ")
+  (setq which-key-special-keys nil)
+  (setq which-key-paging-key "<next>")
   (which-key-mode +1))
 #+end_src
 
