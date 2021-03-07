@@ -1016,6 +1016,20 @@ Load =j-minibuffer= package.
          ("C-j" . exit-minibuffer))))
 #+end_src
 
+** Marginalia for completions
+
+This package provides annotations for completion candidates.
+
+#+begin_src emacs-lisp
+(use-package marginalia
+  :straight t
+  :config
+  (setq marginalia-annotators
+	'(marginalia-annotators-heavy
+	  marginalia-annotators-light))
+  (marginalia-mode +1))
+#+end_src
+
 * Directory, buffer and window management
 
 * Applications, utilities and major modes
