@@ -932,6 +932,8 @@ The list of possible candidates (candidate alternatives) is shown in a separate 
 
 The minibuffer history is saved using the built-in mechanism (see section TODO).
 
+While typing input into the minibuffer, the =*Completions*= buffer is shown (with all possible candidates) by pressing tab key. This behaviour is supressed by setting =minibuffer-auto-help= to =nil= as we use Embark instead (see section TODO).
+
 #+begin_src emacs-lisp :mkdirp yes :tangle ./j-lisp/j-minibuffer.el
 ;;; j-minibuffer.el --- Extensions for minibuffer -*- lexical-binding: t -*-
 
@@ -945,9 +947,20 @@ The minibuffer history is saved using the built-in mechanism (see section TODO).
   "Extensions for minibuffer."
   :group 'minibuffer)
 
+(defcustom j-minibuffer-completions-regexp
+  "\\*\\(Completions\\|Embark Collect \\(Live\\|Completions\\)\\)"
+  "Regexp to match window names with completion candidates.
+Used by `j-minibuffer--get-completions'."
+  :group 'prot-minibuffer
+  :type 'string)
+
 (defun j-minibuffer--get-completions ()
   "Find completions buffer."
-  (get-buffer-window "*Completions*"))
+  (get-window-with-predicate
+   (lambda (window)
+     (string-match-p
+      j-minibuffer-completions-regexp
+      (format "%s" window)))))
 
 ;;;###autoload
 (defun j-minibuffer-focus-minibuffer ()
@@ -991,7 +1004,7 @@ Load =j-minibuffer= package.
   (setq completion-pcm-complete-word-inserts-delimiters t)
   (setq completion-pcm-word-delimiters "-_./:| ")
   (setq completion-show-help nil)
-  (setq completion-auto-help t)
+  (setq completion-auto-help nil)
   (setq completion-ignore-case t)
   (setq-default case-fold-search t)
   (setq read-buffer-completion-ignore-case t)
@@ -1011,9 +1024,7 @@ Load =j-minibuffer= package.
    ("s-B" . switch-to-buffer-other-window)
    ("s-d" . dired)
    ("s-D" . dired-other-window)
-   ("s-v" . j-minibuffer-focus-minibuffer-or-completions)
-   (:map minibuffer-local-completion-map
-         ("C-j" . exit-minibuffer))))
+   ("s-v" . j-minibuffer-focus-minibuffer-or-completions)))
 #+end_src
 
 ** Marginalia for completions
