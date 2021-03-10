@@ -926,9 +926,11 @@ Load =j-orderless= package.
 
 The minibuffer is where commands read input such as file names, search strings, buffer names, etc. When the input string is being typed in the minibuffer Emacs can fill in the rest, or some of it. When the completion is available, some keys can be bound to commands that try to complete the mininbuffer input.
 
-The list of possible candidates (candidate alternatives) is shown in a separate buffer called =*Completions*= (normally by pressing TAB key) if there are more than =completion-cycle-threshold= candidates. There are two completion styles used in the minibuffer:
+There are multiple completion styles used in the minibuffer:
 - =orderless= which is described in the previous section;
-- =partial-completion= which is built-in and provides completions for file system paths e.g. by typing =~/.l/s/fo= we get =~/.local/share/fonts=.
+- =partial-completion= which is built-in and provides completions for file system paths e.g. by typing =~/.l/s/fo= we get =~/.local/share/fonts=;
+- =substring= maps =foobar= with point between =foo= and =bar= as =.*foo.*bar.*=;
+- =flex= maps =abc= as =a.*b.*c=.
 
 The minibuffer history is saved using the built-in mechanism (see section TODO).
 
@@ -997,7 +999,7 @@ Load =j-minibuffer= package.
 (use-package minibuffer
   :after j-minibuffer
   :config
-  (setq completion-styles '(orderless partial-completion))
+  (setq completion-styles '(partial-completion substring flex orderless))
   (setq completion-category-defaults nil)
   (setq completion-cycle-threshold 3)
   (setq completion-flex-nospace nil)
