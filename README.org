@@ -1102,11 +1102,11 @@ This package provides annotations for completion candidates.
 
 ;;;###autoload
 (defun j-embark-collect-fit-window (&rest _)
-  "Fit Embark's live occur window to its buffer.
+  "Fit Embark's collect completions window to its buffer.
 To be added to `embark-collect-post-revert-hook'."
   (when (derived-mode-p 'embark-collect-mode)
     (fit-window-to-buffer (get-buffer-window)
-                          (floor (frame-height) 2) 1)))
+                          (floor (frame-height) 3) 1)))
 
 (autoload 'embark-collect-completions "embark")
 
