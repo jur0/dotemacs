@@ -1083,17 +1083,23 @@ This package provides annotations for completion candidates.
 
 ;;; Code:
 
+(when (featurep 'embark)
+  (require 'embark))
+
 (defgroup j-embark ()
   "Extensions for embark."
   :group 'editing)
-
-(defvar embark-collect-linked-buffer)
 
 (defun j-embark--live-buffer-p ()
   "Determine presence of a linked live occur buffer."
   (let ((buf embark-collect-linked-buffer))
     (when buf
       (window-live-p (get-buffer-window buf)))))
+
+(defun j-embark--live-completions-p ()
+  "Determine whether current collection is for live completions."
+  (and (derived-mode-p 'embark-collect-mode)
+       (eq embark-collect--kind :completions)))
 
 ;;;###autoload
 (defun j-embark-collect-fit-window (&rest _)
@@ -1103,8 +1109,6 @@ To be added to `embark-collect-post-revert-hook'."
     (fit-window-to-buffer (get-buffer-window)
                           (floor (frame-height) 3) 1)))
 
-(autoload 'embark-collect-completions "embark")
-
 ;;;###autoload
 (defun j-embark-completions-toggle ()
   "Toggle `embark-collect-completions'."
@@ -1112,6 +1116,26 @@ To be added to `embark-collect-post-revert-hook'."
   (if (j-embark--live-buffer-p)
       (kill-buffer embark-collect-linked-buffer)
     (embark-collect-completions)))
+
+;;;###autoload
+(defun j-embark-keyboard-quit ()
+  "Control the exit behaviour for Embark collect buffers.
+
+If in a live Embark collect/completions buffer and unless the
+region is active, run `abort-recursive-edit'.  Otherwise run
+`keyboard-quit'.
+
+If the region is active, deactivate it.  A second invocation of
+this command is then required to abort the session.
+
+This is meant to be bound in `embark-collect-mode-map'."
+  (interactive)
+  (if (j-embark--live-completions-p)
+      (if (use-region-p)
+          (keyboard-quit)
+        (kill-buffer)
+        (abort-recursive-edit))
+    (keyboard-quit)))
 
 (provide 'j-embark)
 ;;; j-embark.el ends here
@@ -1125,7 +1149,11 @@ To be added to `embark-collect-post-revert-hook'."
   (embark-collect-post-revert . j-embark-collect-fit-window)
   :bind
   (:map minibuffer-local-completion-map
-	 ("C-l" . j-embark-completions-toggle)))
+	("C-l" . j-embark-completions-toggle))
+  (:map embark-collect-mode-map
+	("C-g" . j-embark-keyboard-quit)))
+#+end_src
+
 #+end_src
 
 * Directory, buffer and window management
