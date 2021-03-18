@@ -1151,6 +1151,7 @@ This is meant to be bound in `embark-collect-mode-map'."
   (:map minibuffer-local-completion-map
 	("C-l" . j-embark-completions-toggle))
   (:map embark-collect-mode-map
+	("h" . helpful-at-point)
 	("C-g" . j-embark-keyboard-quit)))
 #+end_src
 
