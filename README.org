@@ -1050,12 +1050,7 @@ This package provides annotations for completion candidates.
   :straight t
   :config
   (setq embark-collect-initial-view-alist
-        '((file . list)
-          (buffer . list)
-          (symbol . list)
-          (line . list)
-          (xref-location . list)
-          (kill-ring . zebra)
+        '((kill-ring . zebra)
           (t . list)))
   (setq embark-action-indicator
 	(lambda (map _target)
