@@ -640,7 +640,7 @@ The =which-key= is a minor mode that displays the key bindings following current
   (setq which-key-max-display-columns 3)
   (setq which-key-separator "  ")
   (setq which-key-special-keys nil)
-  (setq which-key-paging-key "<next>")
+  (setq which-key-paging-key "<down>")
   (which-key-mode +1))
 #+end_src
 
