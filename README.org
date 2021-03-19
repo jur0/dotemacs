@@ -288,6 +288,13 @@ The =j-lisp/j-common.el= defines commonly used functions within this configurati
   (string-equal "root" (getenv "USER"))
   "Are you a ROOT user?")
 
+;;;###autoload
+(defun j-common-number-negative (n)
+  "Make N negative."
+  (if (and (numberp n) (> n 0))
+      (* -1 n)
+    (error "%s is not a valid positive number" n)))
+
 (provide 'j-common)
 ;;; j-common.el ends here
 #+end_src
@@ -953,7 +960,7 @@ While typing input into the minibuffer, the =*Completions*= buffer is shown (wit
   "\\*\\(Completions\\|Embark Collect \\(Live\\|Completions\\)\\)"
   "Regexp to match window names with completion candidates.
 Used by `j-minibuffer--get-completions'."
-  :group 'prot-minibuffer
+  :group 'j-minibuffer
   :type 'string)
 
 (defun j-minibuffer--get-completions ()
@@ -965,7 +972,7 @@ Used by `j-minibuffer--get-completions'."
       (format "%s" window)))))
 
 ;;;###autoload
-(defun j-minibuffer-focus-minibuffer ()
+(defun j-minibuffer-focus-mini ()
   "Focus the active minibuffer."
   (interactive)
   (let ((mini (active-minibuffer-window)))
@@ -973,7 +980,7 @@ Used by `j-minibuffer--get-completions'."
       (select-window mini))))
 
 ;;;###autoload
-(defun j-minibuffer-focus-minibuffer-or-completions ()
+(defun j-minibuffer-focus-mini-or-completions ()
   "Focus the active minibuffer or completions buffer."
   (interactive)
   (let* ((minibuffer (active-minibuffer-window))
@@ -1026,7 +1033,7 @@ Load =j-minibuffer= package.
    ("s-B" . switch-to-buffer-other-window)
    ("s-d" . dired)
    ("s-D" . dired-other-window)
-   ("s-v" . j-minibuffer-focus-minibuffer-or-completions)))
+   ("s-v" . j-minibuffer-focus-mini-or-completions)))
 #+end_src
 
 ** Marginalia for completions
@@ -1085,6 +1092,8 @@ This package provides annotations for completion candidates.
 
 (when (featurep 'embark)
   (require 'embark))
+(require 'j-common)
+(require 'j-minibuffer)
 
 (defgroup j-embark ()
   "Extensions for embark."
@@ -1137,6 +1146,60 @@ This is meant to be bound in `embark-collect-mode-map'."
         (abort-recursive-edit))
     (keyboard-quit)))
 
+;;;###autoload
+(defun j-embark-next-line-or-mini (&optional arg)
+  "Move to the next line or switch to the minibuffer.
+This performs a regular motion for optional ARG lines, but when
+point can no longer move in that direction, then it switches to
+the minibuffer."
+  (interactive "p")
+  (if (or (eobp) (eq (point-max) (save-excursion (forward-line 1) (point))))
+      (j-minibuffer-focus-mini)    ; from `j-minibuffer.el'
+    (forward-line (or arg 1)))
+  (setq this-command 'next-line))
+
+;;;###autoload
+(defun j-embark-previous-line-or-mini (&optional arg)
+  "Move to the next line or switch to the minibuffer.
+This performs a regular motion for optional ARG lines, but when
+point can no longer move in that direction, then it switches to
+the minibuffer."
+  (interactive "p")
+  (let ((num (j-common-number-negative arg))) ; from `j-common.el'
+    (if (bobp)
+        (j-minibuffer-focus-mini)    ; from `j-minibuffer.el'
+      (forward-line (or num 1)))))
+
+(defun j-embark--switch-to-completions ()
+  "Subroutine for switching to the Embark completions buffer."
+  (unless (j-embark--live-buffer-p)
+    (j-embark-completions-toggle))
+  (let ((win (get-buffer-window embark-collect-linked-buffer)))
+    (select-window win)))
+
+;;;###autoload
+(defun j-embark-switch-to-completions-top ()
+  "Switch to the top of Embark's completions buffer.
+Meant to be bound in `minibuffer-local-completion-map'."
+  (interactive)
+  (j-embark--switch-to-completions)
+  (goto-char (point-min)))
+
+;;;###autoload
+(defun j-embark-switch-to-completions-bottom ()
+  "Switch to the bottom of Embark's completions buffer.
+Meant to be bound in `minibuffer-local-completion-map'."
+  (interactive)
+  (j-embark--switch-to-completions)
+  (goto-char (point-max))
+  (forward-line -1)
+  (goto-char (point-at-bol))
+  (recenter
+   (- -1
+      (min (max 0 scroll-margin)
+           (truncate (/ (window-body-height) 4.0))))
+      t))
+
 (provide 'j-embark)
 ;;; j-embark.el ends here
 #+end_src
@@ -1148,11 +1211,15 @@ This is meant to be bound in `embark-collect-mode-map'."
   :hook
   (embark-collect-post-revert . j-embark-collect-fit-window)
   :bind
-  (:map minibuffer-local-completion-map
-	("C-l" . j-embark-completions-toggle))
   (:map embark-collect-mode-map
 	("h" . helpful-at-point)
-	("C-g" . j-embark-keyboard-quit)))
+	("C-g" . j-embark-keyboard-quit)
+	("C-n" . j-embark-next-line-or-mini)
+	("C-p" . j-embark-previous-line-or-mini))
+  (:map minibuffer-local-completion-map
+	("C-n" . j-embark-switch-to-completions-top)
+	("C-p" . j-embark-switch-to-completions-bottom)
+	("C-l" . j-embark-completions-toggle)))
 #+end_src
 
 #+end_src
