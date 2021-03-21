@@ -73,7 +73,7 @@ In order to call garbage collection less frequently the =gc-cons-threshold= is i
   (if (display-graphic-p) 128000000 32000000)
   "The upper limit value for `gc-cons-threshold' to defer it.")
 
-(defun my/setup-default-startup-values ()
+(defun j-setup-default-startup-values ()
   "Setup default startup values."
   (setq gc-cons-threshold gc-cons-threshold-default)
   (setq gc-cons-percentage gc-cons-percentage-default)
@@ -82,26 +82,26 @@ In order to call garbage collection less frequently the =gc-cons-threshold= is i
   (makunbound 'gc-cons-percentage-default)
   (makunbound 'file-name-handler-alist-default))
 
-(defun my/minibuffer-setup-hook ()
+(defun j-minibuffer-setup-hook ()
   "Setup `gc-cons-threshold' to a large number.
 
 When minibuffer is open, garbage collection never occurs so there
 is no freezing."
   (setq gc-cons-threshold gc-cons-threshold-upper-limit))
 
-(defun my/minibuffer-exit-hook ()
+(defun j-minibuffer-exit-hook ()
   "Setup `gc-cons-threshold' to a small number.
 
 When a selection is made or minibuffer is cancelled, garbage
 collection kicks off."
   (setq gc-cons-threshold gc-cons-threshold-default))
 
-(defun my/garbage-collect-when-minibuffer-exit ()
+(defun j-garbage-collect-when-minibuffer-exit ()
   "Setup setup and exit hooks for minibuffer."
-  (add-hook 'minibuffer-setup-hook #'my/minibuffer-setup-hook)
-  (add-hook 'minibuffer-exit-hook #'my/minibuffer-exit-hook))
+  (add-hook 'minibuffer-setup-hook #'j-minibuffer-setup-hook)
+  (add-hook 'minibuffer-exit-hook #'j-minibuffer-exit-hook))
 
-(defun my/garbage-collect-when-unfocused ()
+(defun j-garbage-collect-when-unfocused ()
   "Setup garbage collection when unfocused."
   (if (boundp 'after-focus-change-function)
       (add-function :after after-focus-change-function
@@ -110,9 +110,9 @@ collection kicks off."
                         (garbage-collect))))
     (add-hook 'after-focus-change-function #'garbage-collect)))
 
-(add-hook 'emacs-startup-hook #'my/setup-default-startup-values)
-(add-hook 'emacs-startup-hook #'my/garbage-collect-when-minibuffer-exit)
-(add-hook 'emacs-startup-hook #'my/garbage-collect-when-unfocused)
+(add-hook 'emacs-startup-hook #'j-setup-default-startup-values)
+(add-hook 'emacs-startup-hook #'j-garbage-collect-when-minibuffer-exit)
+(add-hook 'emacs-startup-hook #'j-garbage-collect-when-unfocused)
 #+end_src
 
 * Package management
