@@ -53,11 +53,11 @@ The main configuration file =init.el= starts here.
 
 ** Emacs version check
 
-The minimal supported version of Emacs is 27.1.
+The minimal supported version of Emacs is 28.0.
 
 #+begin_src emacs-lisp
-(when (version< emacs-version "27.1")
-  (error "Emacs 27.1 or newer versions are required!"))
+(when (version< emacs-version "28.0")
+  (error "Emacs 28.0 or newer versions are required!"))
 #+end_src
 
 ** Garbage collector tweaks
@@ -963,14 +963,6 @@ Used by `j-minibuffer--get-completions'."
   :group 'j-minibuffer
   :type 'string)
 
-(defun j-minibuffer--get-completions ()
-  "Find completions buffer."
-  (get-window-with-predicate
-   (lambda (window)
-     (string-match-p
-      j-minibuffer-completions-regexp
-      (format "%s" window)))))
-
 ;;;###autoload
 (defun j-minibuffer-focus-mini ()
   "Focus the active minibuffer."
@@ -978,6 +970,14 @@ Used by `j-minibuffer--get-completions'."
   (let ((mini (active-minibuffer-window)))
     (when mini
       (select-window mini))))
+
+(defun j-minibuffer--get-completions ()
+  "Find completions buffer."
+  (get-window-with-predicate
+   (lambda (window)
+     (string-match-p
+      j-minibuffer-completions-regexp
+      (format "%s" window)))))
 
 ;;;###autoload
 (defun j-minibuffer-focus-mini-or-completions ()
@@ -1008,7 +1008,7 @@ Load =j-minibuffer= package.
   :config
   (setq completion-styles '(partial-completion substring flex orderless))
   (setq completion-category-defaults nil)
-  (setq completion-cycle-threshold 3)
+  (setq completion-cycle-threshold nil)
   (setq completion-flex-nospace nil)
   (setq completion-pcm-complete-word-inserts-delimiters t)
   (setq completion-pcm-word-delimiters "-_./:| ")
@@ -1016,9 +1016,10 @@ Load =j-minibuffer= package.
   (setq completion-auto-help nil)
   (setq completion-ignore-case t)
   (setq-default case-fold-search t)
+  (setq completions-format 'one-column)
+  (setq completions-detailed t)
   (setq read-buffer-completion-ignore-case t)
   (setq read-file-name-completion-ignore-case t)
-  (setq completions-format 'vertical)
   (setq enable-recursive-minibuffers t)
   (setq read-answer-short t)
   (setq resize-mini-windows t)
@@ -1048,6 +1049,34 @@ This package provides annotations for completion candidates.
 	'(marginalia-annotators-heavy
 	  marginalia-annotators-light))
   (marginalia-mode +1))
+#+end_src
+
+** Enhanced minibuffer commands
+
+#+begin_src emacs-lisp
+(use-package consult
+  :straight t
+  :config
+  (setq consult-line-numbers-widen t)
+  (setq completion-in-region-function #'consult-completion-in-region)
+  (setq consult-async-min-input 3)
+  (setq consult-narrow-key ">")
+  :bind
+  (("C-x M-:" . consult-complex-command)
+   ("C-x M-m" . consult-minor-mode-menu)
+   ("C-x M-k" . consult-kmacro)
+   ("M-g g" . consult-goto-line)
+   ("M-g M-g" . consult-goto-line)
+   ("M-X" . consult-mode-command)
+   ("M-K" . consult-keep-lines) ; M-S-k is similar to M-S-5 (M-%)
+   ("M-F" . consult-focus-lines) ; same principle
+   ("M-s g" . consult-grep)
+   ("M-s m" . consult-mark)
+   ("C-x r r" . consult-register) ; Use the register's prefix
+   ("C-x r S" . consult-register-store)
+   ("C-x r L" . consult-register-load)
+   (:map consult-narrow-map
+	 ("?" . consult-narrow-help))))
 #+end_src
 
 ** Extended actions
@@ -1222,6 +1251,13 @@ Meant to be bound in `minibuffer-local-completion-map'."
 	("C-l" . j-embark-completions-toggle)))
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package embark-consult
+  :straight t
+  :after (embark consult)
+  :bind
+  (:map embark-collect-mode-map
+	("C-j" . embark-consult-preview-at-point)))
 #+end_src
 
 * Directory, buffer and window management
