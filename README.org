@@ -1062,7 +1062,8 @@ This package provides annotations for completion candidates.
   (setq consult-async-min-input 3)
   (setq consult-narrow-key ">")
   :bind
-  (("C-x M-:" . consult-complex-command)
+  (("s-y" . consult-yank)
+   ("C-x M-:" . consult-complex-command)
    ("C-x M-m" . consult-minor-mode-menu)
    ("C-x M-k" . consult-kmacro)
    ("M-g g" . consult-goto-line)
