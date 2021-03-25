@@ -864,6 +864,10 @@ TODO
 
 ** Completion framework
 
+Completion framework refers to searching, narrowing and selecting a candidate from multiple alternatives.
+
+*** Orderless completion style
+
 A completion style is a back-end for completion. Probably the most powerful completion style, that combines multiple different styles, is *orderless*. The [[https://github.com/oantolin/orderless][orderless project page]] has extensive documentation.
 
 In orderless completion style, a search pattern is split into components (check =orderless-component-separator=). Each of these components can be matched using a different matching style. It's possible to force a particular matching style for a given component (check =orderless-style-dispatchers=) to have more fine-grained control.
@@ -929,7 +933,7 @@ Load =j-orderless= package.
 	("?" . nil)))
 #+end_src
 
-** Minibuffer
+*** Minibuffer
 
 The minibuffer is where commands read input such as file names, search strings, buffer names, etc. When the input string is being typed in the minibuffer Emacs can fill in the rest, or some of it. When the completion is available, some keys can be bound to commands that try to complete the mininbuffer input.
 
@@ -1037,9 +1041,9 @@ Load =j-minibuffer= package.
    ("s-v" . j-minibuffer-focus-mini-or-completions)))
 #+end_src
 
-** Marginalia for completions
+*** Annotations for completion candidates
 
-This package provides annotations for completion candidates.
+The =marginalia= package provides annotations for completion candidates in vertical view.
 
 #+begin_src emacs-lisp
 (use-package marginalia
@@ -1051,7 +1055,9 @@ This package provides annotations for completion candidates.
   (marginalia-mode +1))
 #+end_src
 
-** Enhanced minibuffer commands
+*** Enhanced minibuffer commands
+
+The =consult= package enhances various commands that are meant to replace the existing ones. The consult commands offer an improved interactive experience, can add live previews, filtering and narrowing. It is achieved by creating a wrapper for =completing-read= function.
 
 #+begin_src emacs-lisp
 (use-package consult
@@ -1080,7 +1086,16 @@ This package provides annotations for completion candidates.
 	 ("?" . consult-narrow-help))))
 #+end_src
 
-** Extended actions
+*** Extended actions
+
+=embark= provides the ability to execute an action on a target using =embark-act= command. The target can be a completion candidate in the minibuffer, a region, symbol or URL at point, etc. The action is dependent on the type of the target. More precisely, there are multiple actions associated with a target (defined in an /action keymap/ for the given target type) to choose from.
+
+Embark acts both on individual targets and a set of candidates - for example the set of buffer candidates in minibuffer when switching to a different buffer. Embark can produce a buffer with the list of the current candidate set using =embark-collect-snapshot=. Similarly it can produce live/updating view of the current candidate set using =embark-collect-live=. The =embark-export= tries to open an appropriate buffer for the list of candidates (=dired= for list of files, =ibuffer= for list of buffers, etc.).
+
+The "live" candidate view is used as the front-end for minibuffer (check =minibuffer-setup-hook=). This buffer pops up only after there is some input typed.
+
+The =j-embark= enhances the =embark= package:
+TODO
 
 #+begin_src emacs-lisp
 (use-package embark
@@ -1234,6 +1249,8 @@ Meant to be bound in `minibuffer-local-completion-map'."
 ;;; j-embark.el ends here
 #+end_src
 
+Load =j-embark= package.
+
 #+begin_src emacs-lisp
 (use-package j-embark
   :straight (:type built-in)
@@ -1251,6 +1268,8 @@ Meant to be bound in `minibuffer-local-completion-map'."
 	("C-p" . j-embark-switch-to-completions-bottom)
 	("C-l" . j-embark-completions-toggle)))
 #+end_src
+
+TODO
 
 #+begin_src emacs-lisp
 (use-package embark-consult
