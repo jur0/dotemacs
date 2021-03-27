@@ -1280,6 +1280,239 @@ TODO
 	("C-j" . embark-consult-preview-at-point)))
 #+end_src
 
+** Search commands
+
+*** Search, replace, occur and grep
+
+=isearch= and =replace= are built-in into Emacs. Their main functionality includes:
+- incremental search forward/backward;
+- search and replace a matched string with another string;
+- listing all matches (string or regular expression) into a separate buffer (=occur-mode=).
+
+The most common key bindings:
+
+| Key binding | Description                                  |
+|-------------+----------------------------------------------|
+| =C-s=       | search forward                               |
+| =C-r=       | search backward                              |
+| =C-M-s=     | search regexp forward                        |
+| =C-M-r=     | search regexp backward                       |
+| =M-%=       | replace string matches                       |
+| =C-M-%=     | replaces regexp matches                      |
+| =C-s M-r=   | toggle regexp search                         |
+| =M-s o=     | list all regexp matches in a separate buffer |
+| =C-s C-w=   | search char or word at point                 |
+| =M-s .=     | search symbol at point                       |
+| =M-s h r=   | highlight regexp                             |
+| =M-s h u=   | highlight undo                               |
+| =C-h k C-s= | show help with additional keybindings        |
+
+The occur and replace operations are aware of active region, so the search and replace operation is executed only in the highlighted area (also possible to be done with narrowing =C-x n C-h=).
+
+Due to the combined effect of the values assigned to the variables =search-whitespace-regexp=, =isearch-lax-whitespace=, =isearch-regexp-lax-whitespace=, the space is interpreted as wildcard (=a b c= as search input is interpreted as =a.*b.*c.*=). This affects string search, but not the regexp search. To interprate space as literal, toggle whitespace matching with =M-s SPC=.
+
+#+begin_src emacs-lisp
+(use-package isearch
+  :config
+  (setq search-highlight t)
+  (setq search-whitespace-regexp ".*?")
+  (setq isearch-lax-whitespace t)
+  (setq isearch-regexp-lax-whitespace nil)
+  (setq isearch-lazy-highlight t)
+  (setq isearch-lazy-count t)
+  (setq lazy-count-prefix-format nil)
+  (setq lazy-count-suffix-format " (%s/%s)")
+  (setq isearch-yank-on-move 'shift)
+  (setq isearch-allow-scroll 'unlimited)
+  :bind
+  ((:map minibuffer-local-isearch-map
+	 ("M-/" . isearch-complete-edit))
+   (:map isearch-mode-map
+	 ("C-g" . isearch-cancel)
+	 ("M-/" . isearch-complete))))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package replace
+  :config
+  (setq list-matching-lines-jump-to-current-line t)
+  :hook
+  ((occur-mode . hl-line-mode)
+   (occur-mode . (lambda () (toggle-truncate-lines t))))
+  :bind
+  (("M-s M-o" . multi-occur)
+   (:map occur-mode-map
+	 ("t" . toggle-truncate-lines))))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package j-search
+  :straight (:type built-in)
+  :bind
+  (("M-s %" . j-search-isearch-replace-symbol)
+   ("M-s M-<" . j-search-isearch-beginning-of-buffer)
+   ("M-s M->" . j-search-isearch-end-of-buffer)
+   ("M-s g" . j-search-grep)
+   ("M-s u" . j-search-occur-urls)
+   ("M-s M-u" . j-search-occur-browse-url)
+  (:map isearch-mode-map
+    ("<backspace>" . j-search-isearch-abort-dwim)
+    ("<C-return>" . j-search-isearch-other-end))))
+#+end_src
+
+#+begin_src emacs-lisp :mkdirp yes :tangle ./j-lisp/j-search.el
+;;; j-embark.el --- Extensions for search, replace and grep -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; Extensions for search, replace and grep.
+
+;;; Code:
+
+(require 'isearch)
+(require 'replace)
+(require 'grep)
+
+;;;; Isearch
+
+;;;###autoload
+(defun j-search-isearch-other-end ()
+  "End current search in the opposite side of the match.
+Particularly useful when the match does not fall within the
+confines of word boundaries (e.g. multiple words)."
+  (interactive)
+  (isearch-done)
+  (when isearch-other-end
+    (goto-char isearch-other-end)))
+
+;;;###autoload
+(defun j-search-isearch-abort-dwim ()
+  "Delete failed `isearch' input, single char, or cancel search.
+
+This is a modified variant of `isearch-abort' that allows us to
+perform the following, based on the specifics of the case: (i)
+delete the entirety of a non-matching part, when present; (ii)
+delete a single character, when possible; (iii) exit current
+search if no character is present and go back to point where the
+search started."
+  (interactive)
+  (if (eq (length isearch-string) 0)
+      (isearch-cancel)
+    (isearch-del-char)
+    (while (or (not isearch-success) isearch-error)
+      (isearch-pop-state)))
+  (isearch-update))
+
+(defmacro j-search-isearch-occurrence (name edge &optional doc)
+  "Construct function for moving to `isearch' occurrence.
+NAME is the name of the function.  EDGE is either the beginning
+or the end of the buffer.  Optional DOC is the resulting
+function's docstring."
+  `(defun ,name (&optional arg)
+     ,doc
+     (interactive "p")
+     (let ((x (or arg 1))
+           (command (intern (format "isearch-%s-of-buffer" ,edge))))
+       (isearch-forward-symbol-at-point)
+       (funcall command x))))
+
+(j-search-isearch-occurrence
+ j-search-isearch-beginning-of-buffer
+ "beginning"
+ "Run `isearch-beginning-of-buffer' for the symbol at point.
+With numeric ARG, move to ARGth occurrence counting from the
+beginning of the buffer.")
+
+(j-search-isearch-occurrence
+ j-search-isearch-end-of-buffer
+ "end"
+ "Run `isearch-end-of-buffer' for the symbol at point.
+With numeric ARG, move to ARGth occurrence counting from the
+end of the buffer.")
+
+;;;; Replace/Occur
+
+;; TODO: make this work backwardly when given a negative argument
+(defun j-search-isearch-replace-symbol ()
+  "Run `query-replace-regexp' for the symbol at point."
+  (interactive)
+  (isearch-forward-symbol-at-point)
+  (isearch-query-replace-regexp))
+
+(defvar j-search-url-regexp
+  (concat
+   "\\b\\(\\(www\\.\\|\\(s?https?\\|ftp\\|file\\|gopher\\|"
+   "nntp\\|news\\|telnet\\|wais\\|mailto\\|info\\):\\)"
+   "\\(//[-a-z0-9_.]+:[0-9]*\\)?"
+   (let ((chars "-a-z0-9_=#$@~%&*+\\/[:word:]")
+	     (punct "!?:;.,"))
+     (concat
+      "\\(?:"
+      ;; Match paired parentheses, e.g. in Wikipedia URLs:
+      ;; http://thread.gmane.org/47B4E3B2.3050402@gmail.com
+      "[" chars punct "]+" "(" "[" chars punct "]+" ")"
+      "\\(?:" "[" chars punct "]+" "[" chars "]" "\\)?"
+      "\\|"
+      "[" chars punct "]+" "[" chars "]"
+      "\\)"))
+   "\\)")
+  "Regular expression that matches URLs.
+Copy of variable `browse-url-button-regexp'.")
+
+(autoload 'goto-address-mode "goto-addr")
+
+;;;###autoload
+(defun j-search-occur-urls ()
+  "Produce buttonised list of all URLs in the current buffer."
+  (interactive)
+  (add-hook 'occur-hook #'goto-address-mode)
+  (occur j-search-url-regexp "\\&")
+  (remove-hook 'occur-hook #'goto-address-mode))
+
+;;;###autoload
+(defun j-search-occur-browse-url ()
+  "Point browser at a URL in the buffer using completion.
+Which web browser to use depends on the value of the variable
+`browse-url-browser-function'.
+
+Also see `j-search-occur-url'."
+  (interactive)
+  (let ((matches nil))
+    (save-excursion
+      (goto-char (point-min))
+      (while (search-forward-regexp j-search-url-regexp nil t)
+        (push (match-string-no-properties 0) matches)))
+    (funcall browse-url-browser-function
+             (completing-read "Browse URL: " matches nil t))))
+
+;;;; Grep
+
+(defvar j-search--grep-hist '()
+  "Input history of grep searches.")
+
+;;;###autoload
+(defun j-search-grep (regexp &optional recursive)
+  "Run grep for REGEXP.
+
+Search in the current directory using `lgrep'.  With optional
+prefix argument (\\[universal-argument]) for RECURSIVE, run a
+search starting from the current directory with `rgrep'."
+  (interactive
+   (list
+    (read-from-minibuffer "Local grep for PATTERN: "
+				          nil nil nil 'j-search--grep-hist)
+    current-prefix-arg))
+  (unless grep-command
+    (grep-compute-defaults))
+  (if recursive
+        (rgrep regexp "*" default-directory)
+    (lgrep regexp "*" default-directory)
+  (add-to-history 'j-search--grep-hist regexp)))
+
+(provide 'j-search)
+;;; j-search.el ends here
+#+end_src
+
 * Directory, buffer and window management
 
 * Applications, utilities and major modes
