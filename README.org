@@ -1366,7 +1366,7 @@ Due to the combined effect of the values assigned to the variables =search-white
 #+end_src
 
 #+begin_src emacs-lisp :mkdirp yes :tangle ./j-lisp/j-search.el
-;;; j-embark.el --- Extensions for search, replace and grep -*- lexical-binding: t -*-
+;;; j-search.el --- Extensions for search, replace and grep -*- lexical-binding: t -*-
 
 ;;; Commentary:
 ;;
