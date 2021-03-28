@@ -1,6 +1,11 @@
 #+title: Emacs Configuration
 #+property: header-args:emacs-lisp :tangle ./init-test.el
 
+* Overview
+
+This configuration is mostly based on:
+- [[https://protesilaos.com/dotemacs/][Protesilaos Stavrou's configuration]] and his [[https://www.youtube.com/channel/UC0uTPqBCFIpZxlz_Lv1tk_g][videos]].
+
 * Early initialisation
 
 The =early-init.el= file is supported from version 27.1. It allows to set variables (that have effect on startup speed) early in the initialisation to make Emacs start faster.
