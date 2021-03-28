@@ -1312,7 +1312,7 @@ The most common key bindings:
 | =M-s h u=   | highlight undo                               |
 | =C-h k C-s= | show help with additional keybindings        |
 
-The occur and replace operations are aware of active region, so the search and replace operation is executed only in the highlighted area (also possible to be done with narrowing =C-x n C-h=).
+The occur and replace operations are aware of active region, so the search and replace operation is executed only in the highlighted area (also possible to be done with narrowing =C-x n ...=).
 
 Due to the combined effect of the values assigned to the variables =search-whitespace-regexp=, =isearch-lax-whitespace=, =isearch-regexp-lax-whitespace=, the space is interpreted as wildcard (=a b c= as search input is interpreted as =a.*b.*c.*=). This affects string search, but not the regexp search. To interprate space as literal, toggle whitespace matching with =M-s SPC=.
 
@@ -1336,6 +1336,8 @@ Due to the combined effect of the values assigned to the variables =search-white
 	 ("C-g" . isearch-cancel)
 	 ("M-/" . isearch-complete))))
 #+end_src
+
+The =occur-mode= buffer can be changed to editable (=occur-edit-mode=) by pressing =e=. To switch back from editable buffer, use =C-c C-c=.
 
 #+begin_src emacs-lisp
 (use-package replace
