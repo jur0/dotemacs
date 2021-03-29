@@ -1539,6 +1539,20 @@ The search result of =grep= is placed into a separate buffer (similar to =occur=
 
 * Directory, buffer and window management
 
+** Working with buffers
+
+*** Unique names
+
+If there are mutliple files open with the same name, Emacs will append a number such as =<1>=, =<2>=, etc. to distinguish them. =uniquify= makes the buffer names unique by adding just enough path of the file.
+
+#+begin_src emacs-lisp
+(use-package uniquify
+  :config
+  (setq uniquify-buffer-name-style 'forward)
+  (setq uniquify-strip-common-suffix t)
+  (setq uniquify-after-kill-buffer-p t))
+#+end_src
+
 * Applications, utilities and major modes
 
 ** Org mode
