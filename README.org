@@ -500,6 +500,83 @@ Set super and meta keys for different operating systems.
 
 *** General key bindings
 
+The most essential key bindings:
+
+- *moving the point*
+
+  - by single char, word, sentence, paragraph
+
+  | Key binding | Description          |
+  |-------------+----------------------|
+  | =C-f=       | =forward-char=       |
+  | =C-b=       | =backward-char=      |
+  | =M-f=       | =forward-word=       |
+  | =M-b=       | =backward-word=      |
+  | =C-M-f=     | =forward-sexp=       |
+  | =C-M-b=     | =backward-sexp=      |
+  | =M-a=       | =forward-sentence=   |
+  | =M-e=       | =backward-sentence=  |
+  | =M-}=       | =forward-paragraph=  |
+  | =M-{=       | =backward-paragraph= |
+
+  Moving by s-expression (sexp for short) is useful in code.  For example, a sexp in Lisp is a block of code enclosed in parentheses.
+
+  In order to distinguish between an abbreviation and a sentence end, the sentence is considered to end with two spaces or a new line after =.=, =?= or =!= (the abbreviation ends with just single space).  This is also American typist's convention and it's recommended practise in Emacs.
+
+  #+begin_src emacs-lisp
+  (setq sentence-end-double-space t)
+  (setq sentence-end-without-period nil)
+  (setq colon-double-space nil)
+  (setq use-hard-newlines nil)
+  #+end_src
+
+  Paragraph is basically any section of text separated by blank lines.  This can be used in code (see =paragraph-start= variable).
+
+  - to next/previous line
+
+  | Key binding | Description     |
+  |-------------+-----------------|
+  | =C-n=       | =next-line=     |
+  | =C-p=       | =previous-line= |
+
+  - to beginning/end of line
+
+  | Key binding | Description              |
+  |-------------+--------------------------|
+  | =C-a=       | =move-beginning-of-line= |
+  | =C-e=       | =move-end-of-line=       |
+
+  Note that there is =mwin= package that improves this behaviour (TODO: link).
+
+  - to beginning/end of buffer
+
+  | Key binding | Description           |
+  |-------------+-----------------------|
+  | =M-<=       | =beginning-of-buffer= |
+  | =M->=       | =end-of-buffer=       |
+
+  Note that there is =beginend= package that improves this behaviour (TODO: link).
+
+  - to a specific line/column
+
+  | Key binding | Description      |
+  |-------------+------------------|
+  | =M-g M-g=   | =goto-line=      |
+  | =M-g <tab>= | =move-to-column= |
+
+  Note that =goto-line= is replaced by and improved version - =consult-goto-line= with an additional key binding =M-g g= (TODO: link).
+
+- *scrolling and centering the window*
+
+  | Key binding | Description           |
+  |-------------+-----------------------|
+  | =C-v=       | =scroll-up-command=   |
+  | =M-v=       | =scroll-down-command= |
+  | =C-l=       | =recenter-top-bottom= |
+  | =C-M-l=     | =reposition-window=   |
+
+  =recenter-top-bottom= makes the line with the point to be in the middle/top/bottom of the window depending on how many times it's used in a row. =reposition-window= scrolls the screen so it fits the current "thing" at point as much as possible in the window (paragraph, function definition, etc.).
+
 Disable unused global key bindings.
 
 #+begin_src emacs-lisp
