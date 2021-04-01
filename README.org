@@ -1614,6 +1614,21 @@ The search result of =grep= is placed into a separate buffer (similar to =occur=
 	("C-c C-c" . wgrep-finish-edit)))
 #+end_src
 
+*** Cross-references
+
+An /identifier/ is a syntactical unit of a program: a function, a class, a data type, etc.  Software development requires quickly looking up identifiers, their definitions, renaming them across the project, etc.  =xref= provides an interface for these capabilities.  The backend for =xref= is major-mode specific, it can be built-in (for elisp) or it can be an external program such as =etags= that comes with Emacs.
+
+#+begin_src emacs-lisp
+(use-package xref
+  :config
+  ;; M-.
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read)
+  ;; grep and the like
+  (setq xref-show-xrefs-function #'xref-show-definitions-buffer)
+  (setq xref-file-name-display 'project-relative)
+  (setq xref-search-program 'ripgrep))
+#+end_src
+
 * Directory, buffer and window management
 
 ** Working with buffers
