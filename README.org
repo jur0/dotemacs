@@ -447,7 +447,7 @@ with the one at point (region end).
 Otherwise, and while inside a sentence, this behaves as the
 built-in `transpose-words', dragging forward the word behind the
 point.  The difference lies in its behaviour at the end or
-beginnning of a line, where it will always transpose the word at
+beginning of a line, where it will always transpose the word at
 point with the one behind or ahead of it (effectively the
 last/first two words)."
   (interactive "p")
