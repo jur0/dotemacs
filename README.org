@@ -1649,6 +1649,167 @@ If there are mutliple files open with the same name, Emacs will append a number 
   (setq uniquify-after-kill-buffer-p t))
 #+end_src
 
+** Window configuration
+
+Buffers are displayed by calling =display-buffer= function. It performs several steps in order to find a window for displaying a buffer. These steps are referred to as /display actions/. This list of actions is traversed one by one until a display action returns a window to display buffer in (if it can't return the window, =nil= is returned).
+
+The display action is composed of /display action functions/ and /display action alist/. The =display-action= function accepts two arguments: the buffer to be displayed and the display action alist. For example:
+
+#+begin_src emacs-lisp :tangle no
+(display-buffer
+ (get-buffer-create "foo")                  ; buffer
+ '((display-buffer-below-selected display-buffer-at-bottom) ; display action functions
+   (inhibit-same-window . t)                ; display action alist
+   (window-height . fit-window-to-buffer))) ; display action alist
+#+end_src
+
+The display actions are taken from these sources (from highest to lowest priority):
+- =display-buffer-overriding-action= (variable);
+- =display-buffer-alist= (user option);
+- =action= (argument);
+- =display-buffer-base-action= (user option);
+- =display-buffer-fallback-action= (constant).
+
+Note that switching to a buffer (=C-x b=) calls =switch-to-buffer=, which normally just uses low-level routine =set-buffer= where the entries of =display-buffer-alist= are irrelevant. There are also occassions when =switch-to-buffer= calls =pop-to-buffer=. In that case the =display-buffer-alist= entries are relevant. To make =switch-to-buffer= behave according to display actions, there is the option =switch-to-buffer-obey-display-actions=. 
+
+Some commands that pop up a new window don't focus the new window. There is a macro in =j-window=. It is a thin wrapper around =display-buffer-*= functions that makes the newly created window focused.
+
+Load =j-window= package.
+
+#+begin_src emacs-lisp
+(use-package j-window
+  :straight (:type built-in)
+  :demand t)
+#+end_src
+
+The behaviour of how windows are displayed is controlled by user option =display-buffer-alist=.
+
+#+begin_src emacs-lisp
+(use-package window
+  :after j-window
+  :config
+  (setq display-buffer-alist
+	'(;; top side window
+	  ("^\\*Apropos\\*"
+	   (j-display-buffer-in-side-window-and-select)
+	   (side . top)n
+	   (slot . -1)
+	   (window-height . 0.40))
+	  ("^\\*[Hh]elp.*"
+	   (j-display-buffer-in-side-window-and-select)
+	   (side . top)
+	   (slot . 0)
+	   (window-height . 0.40))
+	  ("^\\*Messages\\*"
+	   (display-buffer-in-side-window)
+	   (side . top)
+	   (slot . 0)
+	   (window-height . 0.40))
+	  ("^\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
+           (display-buffer-in-side-window)
+           (side . top)
+           (slot . 1)
+           (window-height . 0.40)
+           (window-parameters . ((no-other-window . t))))
+	  ;; bottom side window
+	  ("^\\*\\(Embark\\)?.*Completions.*"
+           (display-buffer-in-side-window)
+	   (window-height . 0.25)
+           (side . bottom)
+           (slot . 0)
+           (window-parameters . ((no-other-window . t)
+                                 (mode-line-format . none))))
+	  ;; bottom window
+	  ("^\\*.*\\(e?shell\\|v?term\\).*"
+           (j-display-buffer-reuse-mode-window-and-select
+	    j-display-buffer-at-bottom-and-select)
+           (window-height . 0.25))
+	  ;; below current window
+	  ("^\\*Calendar.*"
+           (j-display-buffer-reuse-mode-window-and-select
+	    j-display-buffer-below-selected-and-select)
+           (window-height . shrink-window-if-larger-than-buffer))))
+  (setq window-resize-pixelwise t)
+  (setq window-combination-resize t)
+  (setq window-sides-vertical nil)
+  (setq switch-to-buffer-in-dedicated-window 'pop)
+  (setq switch-to-buffer-obey-display-actions t)
+  (setq help-window-select t)
+  :bind
+  (("s-n" . next-buffer)
+   ("s-p" . previous-buffer)
+   ("s-o" . other-window)
+   ("s-2" . split-window-below)
+   ("s-3" . split-window-right)
+   ("s-0" . delete-window)
+   ("s-1" . delete-other-windows)
+   ("s-5" . delete-frame)
+   ("C-x _" . balance-windows)
+   ("C-x +" . balance-windows-area)
+   ("s-q" . window-toggle-side-windows)))
+#+end_src
+
+#+begin_src emacs-lisp :mkdirp yes :tangle ./j-lisp/j-window.el
+;;; j-window.el --- Extensions for window -*- lexical-binding: t -*-
+
+;;; Commentary:
+;;
+;; Extensions for window.
+
+;;; Code:
+
+(defgroup j-window ()
+  "Extensions for window."
+  :group 'windows)
+
+(defmacro j-display-buffer-and-select (fun)
+  "Macro to display buffer and select its window.
+FUN is one of display-buffer-* functions."
+  `(defun ,(intern (format "j-%s-and-select" fun)) (buffer alist)
+     ,(format "Display BUFFER as `%s' and select its window." fun)
+     (let ((window (,fun buffer alist)))
+       (if window
+	   (select-window window)
+	 nil))))
+
+(j-display-buffer-and-select display-buffer-reuse-window)
+
+(j-display-buffer-and-select display-buffer-reuse-mode-window)
+
+(j-display-buffer-and-select display-buffer-in-side-window)
+
+(j-display-buffer-and-select display-buffer-at-bottom)
+
+(j-display-buffer-and-select display-buffer-below-selected)
+
+(provide 'j-window)
+;;; j-window.el ends here
+#+end_src
+
+The =popper= package improves handling of windows. Based on the configuration, some windows are /popups/. They shouldn't mess up the window layout, can be hidden and displayed easily.
+
+Popups can be displayed based on the context (which can be the current directory, project, etc.). Depending on the context, some popups are visible in a given context and some aren't. Note that the commands with universal argument prefix (=C-u=) are useful as well.
+
+There is a [[https://www.youtube.com/watch?v=E-xUNlZi3rI][great video]] on how to use this package.
+
+#+begin_src emacs-lisp
+(use-package popper
+  :straight t
+  :config
+  (setq popper-display-control 'user)
+  (setq popper-group-function #'popper-group-by-project)
+  (setq popper-reference-buffers
+	'("^\\*Apropos\\*"
+	  "^\\*[Hh]elp.*"
+	  "^\\*Messages\\*"
+	  "^\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"))
+  (popper-mode +1)
+  :bind
+  (("C-." . popper-toggle-latest)
+   ("M-." . popper-cycle)
+   ("C-M-." . popper-toggle-type)))
+#+end_src
+
 * Applications, utilities and major modes
 
 ** Org mode
