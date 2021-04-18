@@ -1243,7 +1243,7 @@ TODO
 To be added to `embark-collect-post-revert-hook'."
   (when (derived-mode-p 'embark-collect-mode)
     (fit-window-to-buffer (get-buffer-window)
-                          (floor (frame-height) 3) 1)))
+                          (round (* 0.30 (frame-height))) 1)))
 
 ;;;###autoload
 (defun j-embark-completions-toggle ()
