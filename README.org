@@ -1249,9 +1249,12 @@ To be added to `embark-collect-post-revert-hook'."
 (defun j-embark-completions-toggle ()
   "Toggle `embark-collect-completions'."
   (interactive)
-  (if (j-embark--live-buffer-p)
-      (kill-buffer embark-collect-linked-buffer)
-    (embark-collect-completions)))
+  (cond ((j-embark--live-buffer-p)
+	 (kill-buffer embark-collect-linked-buffer))
+	((j-embark--live-completions-p)
+	 (kill-buffer)
+	 (select-window (active-minibuffer-window)))
+	(t (embark-collect-completions))))
 
 ;;;###autoload
 (defun j-embark-keyboard-quit ()
@@ -1344,7 +1347,8 @@ Load =j-embark= package.
 	("h" . helpful-at-point)
 	("C-g" . j-embark-keyboard-quit)
 	("C-n" . j-embark-next-line-or-mini)
-	("C-p" . j-embark-previous-line-or-mini))
+	("C-p" . j-embark-previous-line-or-mini)
+	("C-l" . j-embark-completions-toggle))
   (:map minibuffer-local-completion-map
 	("C-n" . j-embark-switch-to-completions-top)
 	("C-p" . j-embark-switch-to-completions-bottom)
