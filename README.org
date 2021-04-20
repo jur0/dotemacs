@@ -1366,6 +1366,17 @@ TODO
 	("C-j" . embark-consult-preview-at-point)))
 #+end_src
 
+*** Projects
+
+A "project" is a version controlled directory governed by a program (such as =git=). The =project.el= has commands (=C-x p= prefix) that are useful for working with projects:
+- switching to a project;
+- executing a command in a project;
+- starting a shell in project root;
+- find file, search matches (regexp) in the current project;
+- etc.
+
+Using any of the commands listed in =C-x p C-h= will append the current project to a list of known projects, stored in the dynamically updated =project--list= variable, whose contents are stored in a file defined by =project-list-file=.
+
 ** Search commands
 
 *** Search, replace, occur and grep
